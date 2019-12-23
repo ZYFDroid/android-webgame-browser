@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:gravity="center"
+    android:clickable="true"
+    android:onClick="close"
+    android:layout_height="match_parent">
+<FrameLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shadow">
+
+    <LinearLayout
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_frame"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:padding="16px">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:text="雀魂麻将Majsoul Windows Ver~ 启动器"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnFloat"
+            android:text="申请悬浮窗权限"
+            android:onClick="floatwindow"/>
+
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnStorage"
+            android:layout_marginBottom="16dp"
+            android:text="申请存储权限"
+            android:onClick="storage"/>
+
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="调试模式"
+            android:visibility="gone"
+            android:onClick="debug"/>
+
+
+
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="开始游戏"
+            android:onClick="start"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:text="重置窗口位置"
+            android:onClick="resetposition"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:text="应用信息"
+            android:onClick="appinfo"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="introduce"
+            android:text="功能介绍"/>
+
+
+    </LinearLayout>
+</FrameLayout>
+
+    
+</LinearLayout>
