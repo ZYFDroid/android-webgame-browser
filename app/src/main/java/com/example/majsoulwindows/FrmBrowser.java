@@ -9,25 +9,19 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
-import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.webkit.JsResult;
 import android.webkit.MimeTypeMap;
+import android.webkit.SafeBrowsingResponse;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -36,23 +30,24 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.SequenceInputStream;
+import java.lang.reflect.ParameterizedType;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -117,6 +112,14 @@ public class FrmBrowser extends StandOutWindow {
                         if (shouldCache(resUrl)) {
 
                             File cache = new File(urlToLocalPath(resUrl, getBaseDir()));
+                            File patch = new File(urlToLocalPath(resUrl,getPatchDir()));
+                            if(!patch.getParentFile().exists()){
+                                try {
+                                    patch.getParentFile().mkdirs();
+                                }catch (Exception ex){
+                                    ex.printStackTrace();
+                                }
+                            }
                             String type = "*.*";
                             if (mimt.hasExtension(MimeTypeMap.getFileExtensionFromUrl(resUrl))) {
                                 type = mimt.getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(resUrl));
@@ -124,15 +127,31 @@ public class FrmBrowser extends StandOutWindow {
                             if (resUrl.endsWith("/")) {
                                 type = "text/html";
                             }
-                            if (cache.exists()) {
+                            if (patch.exists() && !resUrl.endsWith("/code.js")) {
 
                                 try {
+                                    Log.e("USES_PATCH", resUrl + " -> " + urlToLocalPath(resUrl, getPatchDir()));
+
+
+                                    return new WebResourceResponse(type, null, new FileInputStream(patch));
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            else if(cache.exists()){
+                                try {
                                     Log.e("USES_CACHE", resUrl + " -> " + urlToLocalPath(resUrl, getBaseDir()));
+
+                                    if(resUrl.endsWith("/code.js")){
+                                        return new WebResourceResponse(type, null, getModedStream(new FileInputStream(cache)));
+                                    }
+
                                     return new WebResourceResponse(type, null, new FileInputStream(cache));
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
                                 }
-                            } else {
+                            }
+                            else {
                                 try {
                                     cache.getParentFile().mkdirs();
                                     cache.createNewFile();
@@ -155,6 +174,11 @@ public class FrmBrowser extends StandOutWindow {
                                     os.close();
                                     conn.disconnect();
                                     Log.e("MAKE_CACHE", resUrl + " -> " + urlToLocalPath(resUrl, getBaseDir()));
+
+                                    if(resUrl.endsWith("/code.js")){
+                                        return new WebResourceResponse(type, null, getModedStream(new FileInputStream(cache)));
+                                    }
+
                                     return new WebResourceResponse(type, null, new FileInputStream(cache));
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -175,14 +199,45 @@ public class FrmBrowser extends StandOutWindow {
                 return super.shouldInterceptRequest(view, request);
             }
 
-            @Override
-            public void onReceivedSslError(WebView view,
-                                           SslErrorHandler handler, SslError error) {
-                // handler.cancel();// Android默认的处理方式
-                handler.proceed();// 接受所有网站的证书
-                // handleMessage(Message msg);// 进行其他处理
+            public InputStream getModedStream(InputStream orignal){
+                Vector<InputStream> patches = new Vector<InputStream>();
+                patches.add(orignal);
+
+
+                File patchList = new File(getModDir());
+                if(!patchList.exists()){
+                    patchList.mkdirs();
+                }
+                for (File p :
+                        patchList.listFiles()) {
+                    if(p.getName().endsWith(".js")){
+                        try {
+                            patches.add(crlfStream());
+                            patches.add(new FileInputStream(p));
+                            Log.e("LOAD_MOD",p.getAbsolutePath());
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                return new SequenceInputStream(patches.elements());
             }
 
+            InputStream crlfStream(){
+                return new ByteArrayInputStream("\r\n\r\n\r\n".getBytes());
+            }
+
+
+            @Override
+            public void onReceivedSslError(WebView view,SslErrorHandler handler, SslError error) {
+                handler.proceed();
+            }
+
+            @TargetApi(27)
+            @Override
+            public void onSafeBrowsingHit(WebView view, WebResourceRequest request, int threatType, SafeBrowsingResponse callback) {
+                callback.proceed(false);
+            }
 
             boolean shouldCache(String url) {
                 if (!url.startsWith(baseUrl)) {
@@ -208,11 +263,26 @@ public class FrmBrowser extends StandOutWindow {
             }
 
             String getBaseDir() {
-                String path = getExternalFilesDir("").getAbsolutePath();
+                String path = getExternalFilesDir(null).getAbsolutePath();
                 if (!path.endsWith("/")) {
                     path += "/";
                 }
-                return path + "hardcache/1/";
+                return path + "webres/";
+            }
+
+            String getPatchDir() {
+                String path = getExternalFilesDir(null).getAbsolutePath();
+                if (!path.endsWith("/")) {
+                    path += "/";
+                }
+                return path + "patch/";
+            }
+            String getModDir() {
+                String path = getExternalFilesDir(null).getAbsolutePath();
+                if (!path.endsWith("/")) {
+                    path += "/";
+                }
+                return path + "mods/";
             }
         });
         this.mWebView.setWebChromeClient(new WebChromeClient() {
