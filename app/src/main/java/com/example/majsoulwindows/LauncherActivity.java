@@ -42,9 +42,7 @@ public class LauncherActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.launcher);
-//        if(hasStorage() && hasFloatWindow()){
-//            startService();
-//        }
+        clickcount=0;
 
         if(hasFloatWindow()){
             findViewById(R.id.btnFloat).setVisibility(View.GONE);
@@ -247,4 +245,27 @@ public class LauncherActivity extends Activity {
     }
 
 
+    int clickcount=0;
+    public void hidefunc(View view) {
+        clickcount++;
+        if(clickcount<10){return;}
+        String msg="打开/sdcard/Android/data/<PKGNAME>/files 可以看到三个文件夹。其中：\n" +
+                "\n" +
+                "webres存放的是魔改参考（本地缓存）\n" +
+                "patch存放的是魔改补丁（目录结构要和webres相同）\n" +
+                "mods存放的是插件，相当于油猴脚本，编码为UTF-8\n" +
+                "剩下的你懂的\n" +
+                "\n" +
+                "推荐插件：\n" +
+                "最近大铳：https://github.com/paulzzh/Majsoul-Chong\n" +
+                "\n" +
+                "最后提醒：\n" +
+                "魔改千万条，安全第一条。\n" +
+                "使用不规范，账号两行泪。\n" +
+                "\n" +
+                "参考：\n" +
+                "MajsoulPlus https://github.com/MajsoulPlus/majsoul-plus";
+        AlertDialog ald =  new AlertDialog.Builder(this).setTitle("里功能介绍").setMessage(msg.replace("<PKGNAME>",getPackageName())).setPositiveButton(android.R.string.ok,null).create();
+        ald.show();
+    }
 }

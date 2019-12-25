@@ -113,13 +113,9 @@ public class FrmBrowser extends StandOutWindow {
 
                             File cache = new File(urlToLocalPath(resUrl, getBaseDir()));
                             File patch = new File(urlToLocalPath(resUrl,getPatchDir()));
-                            if(!patch.getParentFile().exists()){
-                                try {
-                                    patch.getParentFile().mkdirs();
-                                }catch (Exception ex){
-                                    ex.printStackTrace();
-                                }
-                            }
+
+
+
                             String type = "*.*";
                             if (mimt.hasExtension(MimeTypeMap.getFileExtensionFromUrl(resUrl))) {
                                 type = mimt.getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(resUrl));
@@ -259,6 +255,13 @@ public class FrmBrowser extends StandOutWindow {
             }
 
             String urlToLocalPath(String url, String baseDir) {
+                File baseFile = new File(baseDir);
+                if(!baseFile.exists()){
+                    try{
+                        baseFile.mkdirs();
+                    }catch (Exception ex){}
+                }
+
                 return url.replace(baseUrl, baseDir);
             }
 

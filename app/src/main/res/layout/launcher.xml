@@ -23,6 +23,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#000"
+            android:clickable="true"
+            android:onClick="hidefunc"
             android:text="雀魂麻将Majsoul Windows Ver~ 启动器"/>
 
         <Button
