@@ -13,6 +13,9 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -84,6 +87,8 @@ public class FrmBrowser extends StandOutWindow {
     public void createAndAttachView(int id, FrameLayout frame) {
         this.mWebView = new WebView(this);
         frame.addView(mWebView);
+        renderW = getSharedPreferences("0",0).getInt("rw",854);
+        renderH = getSharedPreferences("0",0).getInt("rh",480);
         //this.mWebView.setWebViewClient(new baseUrl(this));
         this.mWebView.setKeepScreenOn(true);
         this.mWebView.setWebViewClient(new WebViewClient() {
@@ -344,13 +349,26 @@ public class FrmBrowser extends StandOutWindow {
                 }
             }
         }
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mWebView.getLayoutParams();
+        lp.width=renderW;
+        lp.height = renderH;
+        mWebView.setLayoutParams(lp);
+        lp.gravity = Gravity.CENTER;
+        rootView = frame;
+        scaleView();
         mWebView.loadUrl(baseUrl);
     }
 
+    int renderW=854,renderH=480;
+
     public void loadClipboardMap(){
         clipboardFinder.put("https://www.majsoul.com/1/?room=","好友房链接");
+        clipboardFinder.put("http://www.majsoul.com/1/?room=","好友房链接");
         clipboardFinder.put("https://www.majsoul.com/1/?paipu=","牌谱链接");
+        clipboardFinder.put("http://www.majsoul.com/1/?paipu=","牌谱链接");
     }
+
+
 
     public void clearClipboard(){
         ClipboardManager manager = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
@@ -363,6 +381,61 @@ public class FrmBrowser extends StandOutWindow {
             }
         }
     }
+
+    FrameLayout rootView;
+    void scaleView(){
+        float pw = rootView.getWidth();
+        float ph = rootView.getHeight();
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mWebView.getLayoutParams();
+        if(pw==0 || ph==0){
+            Log.e("SCALE","View not initialized");
+            return;
+        }
+        if(pw>=ph){
+            lp.width=renderW;
+            lp.height = renderH;
+            if(pw / renderW * renderH < ph){
+                //屏幕更高的场合
+                mWebView.setScaleX(pw/renderW);
+                mWebView.setScaleY(pw/renderW);
+            }
+            else{
+                //屏幕更窄的场合
+                mWebView.setScaleX(ph/renderH);
+                mWebView.setScaleY(ph/renderH);
+            }
+
+        }
+        else{
+            lp.width=renderH;
+            lp.height = renderW;
+
+
+            if(ph / renderW * renderH < pw){
+                //屏幕更高的场合
+                mWebView.setScaleX(ph/renderW);
+                mWebView.setScaleY(ph/renderW);
+            }
+            else{
+                //屏幕更窄的场合
+                mWebView.setScaleX(pw/renderH);
+                mWebView.setScaleY(pw/renderH);
+            }
+        }
+
+
+        mWebView.setLayoutParams(lp);
+    }
+
+    @Override
+    public void onResize(int id, Window window, View view, MotionEvent event) {
+        super.onResize(id, window, view, event);
+        if(null!=rootView){
+            scaleView();
+        }
+    }
+
+
 
     public static String paste(Context context) {
         try {
@@ -513,6 +586,9 @@ public class FrmBrowser extends StandOutWindow {
 
 
         window.setLayoutParams(lp);
+
+        hWnd.postDelayed(resizer,300);
+
         return super.onShow(id, window);
 
     }
@@ -637,6 +713,25 @@ public class FrmBrowser extends StandOutWindow {
     @Override
     public String getPersistentNotificationMessage(int id) {
         return getResources().getString(R.string.app_name)+" 正在运行";
+    }
+
+    Runnable resizer = new Runnable() {
+        @Override
+        public void run() {
+            if(null!=rootView){
+                if(rootView.getWidth()>0) {
+                    scaleView();
+                    return;
+                }
+            }
+            hWnd.postDelayed(this,300);
+        }
+    };
+
+    @Override
+    public void onWindowStateChanged(int id, Window window, View view) {
+        super.onWindowStateChanged(id, window, view);
+        hWnd.postDelayed(resizer,500);
     }
 
     @Override

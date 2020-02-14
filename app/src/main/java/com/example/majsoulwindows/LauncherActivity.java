@@ -38,6 +38,32 @@ public class LauncherActivity extends Activity {
     public static final int OVERLAY_PERMISSION_REQ_CODE = 4331;
     public static final int STORAGE_PERMISSION_REQ_CODE = 4332;
 
+    public String[] resolutions={
+            "16x9 (Minecraft分辨率)",
+            "80x45 (索爱某翻盖手机)",
+            "240x135 (GBA)",
+            "256x144 (任天堂红白机)",
+            "320x180 (世嘉MD)",
+            "400x240 (3DS)",
+            "480x270 (PSP)",
+            "640x360 (最低能玩分辨率)",
+            "854x480 (480P,省电首选)",
+            "960x540 (IPhone4)",
+            "1024x600 (华强北平板电脑)",
+            "1136x640 (Iphone5)",
+            "1280x720 (720P)",
+            "1334x750 (IPhone6/7)",
+            "1366x768 (一般笔记本电脑)",
+            "1440x810 (...)",
+            "1600x900 (...)",
+            "1920x1080 (1080P)",
+            "2000x1125 (IPhone X)",
+            "2560x1440 (2K)",
+            "4096x2160 (4K)",
+            "8192x4320 (8K)",
+            "16384x8640 (试试就逝世)",
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -267,5 +293,21 @@ public class LauncherActivity extends Activity {
                 "MajsoulPlus https://github.com/MajsoulPlus/majsoul-plus";
         AlertDialog ald =  new AlertDialog.Builder(this).setTitle("里功能介绍").setMessage(msg.replace("<PKGNAME>",getPackageName())).setPositiveButton(android.R.string.ok,null).create();
         ald.show();
+    }
+
+    public void setResolution(View view) {
+        new AlertDialog.Builder(this).setTitle("设置分辨率").setItems(resolutions, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String str = resolutions[i];
+                String resstr = str.split("\\s")[0];
+                String[] resp = resstr.split("x");
+
+                getSharedPreferences("0",0).edit().putInt("rw",Integer.parseInt(resp[0])).commit();
+                getSharedPreferences("0",0).edit().putInt("rh",Integer.parseInt(resp[1])).commit();
+
+                Toast.makeText(LauncherActivity.this, "已设置"+resstr, Toast.LENGTH_SHORT).show();
+            }
+        }).create().show();
     }
 }

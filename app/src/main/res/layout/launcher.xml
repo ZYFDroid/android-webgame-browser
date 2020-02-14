@@ -55,10 +55,15 @@
 
 
         <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="开始游戏"
+        android:onClick="start"/>
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="开始游戏"
-            android:onClick="start"/>
+            android:text="设置分辨率(影响耗电)"
+            android:onClick="setResolution"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

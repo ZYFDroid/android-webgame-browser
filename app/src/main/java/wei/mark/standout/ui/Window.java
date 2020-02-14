@@ -255,7 +255,7 @@ public class Window extends FrameLayout {
 							.commit();
 					break;
 			}
-			mContext.onResize(id, this, this, event);
+			mContext.onResize(id, this, this,event);
 		}
 
 		return true;
@@ -382,7 +382,7 @@ public class Window extends FrameLayout {
 
 	/**
 	 * Returns the system window decorations if the implementation sets
-	 * {@link #FLAG_DECORATION_SYSTEM}.
+	 * .
 	 * 
 	 * <p>
 	 * The system window decorations support hiding, closing, moving, and
@@ -457,6 +457,8 @@ public class Window extends FrameLayout {
 					data.putInt(WindowDataKeys.Y_BEFORE_MAXIMIZE, params.y);
 					edit().setSize(1f, 1f).setPosition(0, 0).commit();
 				}
+
+				mContext.onWindowStateChanged(mContext.getUniqueId(),Window.this,body);
 			}
 		});
 

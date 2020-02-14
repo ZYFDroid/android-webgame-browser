@@ -913,7 +913,18 @@ public abstract class StandOutWindow extends Service {
 	 */
 	public void onResize(int id, Window window, View view, MotionEvent event) {
 	}
-
+	/**
+	 * Implement this method to be alerted to when the window maxium state changed.
+	 *
+	 * @param id
+	 *            The id of the view, provided as a courtesy.
+	 * @param window
+	 *            The window corresponding to the id, provided as a courtesy.
+	 * @param view
+	 *            The view where the event originated from.
+	 */
+	public void onWindowStateChanged(int id, Window window, View view) {
+	}
 	/**
 	 * Implement this callback to be alerted when a window corresponding to the
 	 * id is about to be shown. This callback will occur before the view is
