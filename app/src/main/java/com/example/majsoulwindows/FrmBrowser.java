@@ -35,6 +35,7 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -154,8 +155,6 @@ public class FrmBrowser extends StandOutWindow {
                             }
                             else {
                                 try {
-                                    cache.getParentFile().mkdirs();
-                                    cache.createNewFile();
                                     HttpURLConnection conn = (HttpURLConnection) new URL(resUrl.replace("<INDEX>", "")).openConnection();
                                     conn.setRequestMethod("GET");
                                     for (Map.Entry<String, String> header :
@@ -165,21 +164,28 @@ public class FrmBrowser extends StandOutWindow {
                                     conn.connect();
                                     byte[] buffer = new byte[4096];
                                     InputStream is = conn.getInputStream();
-                                    OutputStream os = new FileOutputStream(cache);
+                                    ByteArrayOutputStream os = new ByteArrayOutputStream();
+
                                     int len = 0;
                                     while ((len = is.read(buffer)) != -1) {
                                         os.write(buffer, 0, len);
                                         os.flush();
                                     }
                                     is.close();
+
+                                    cache.getParentFile().mkdirs();
+                                    cache.createNewFile();
+                                    OutputStream fos = new FileOutputStream(cache);
+                                    os.writeTo(fos);
                                     os.close();
+                                    fos.close();
                                     conn.disconnect();
+
                                     Log.e("MAKE_CACHE", resUrl + " -> " + urlToLocalPath(resUrl, getBaseDir()));
 
                                     if(resUrl.endsWith("/code.js")){
                                         return new WebResourceResponse(type, null, getModedStream(new FileInputStream(cache)));
                                     }
-
                                     return new WebResourceResponse(type, null, new FileInputStream(cache));
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -731,7 +737,7 @@ public class FrmBrowser extends StandOutWindow {
     @Override
     public void onWindowStateChanged(int id, Window window, View view) {
         super.onWindowStateChanged(id, window, view);
-        hWnd.postDelayed(resizer,500);
+        hWnd.postDelayed(resizer,300);
     }
 
     @Override
