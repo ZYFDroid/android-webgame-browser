@@ -10,3 +10,5 @@
 -恶搞截图功能(点击窗口图标，有个下拉菜单)
 
 本软件通过系统浏览器实现，呈现 https://www.majsoul.com/1/ 的内容，部分太老的系统和安卓模拟器可能打不开
+
+[点我下载](https://github.com/ZYFDroid/android-majsoul-windows/releases)
