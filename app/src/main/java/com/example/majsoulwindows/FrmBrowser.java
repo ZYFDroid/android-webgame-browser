@@ -314,7 +314,7 @@ public class FrmBrowser extends StandOutWindow {
         settings.setSupportZoom(false);
         settings.setDatabaseEnabled(true);
         settings.setAllowFileAccess(true);
-
+        settings.setMediaPlaybackRequiresUserGesture(false);
         //mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         //this.mWebView.setWebContentsDebuggingEnabled(true);
 
@@ -865,21 +865,36 @@ class AsyncWebDownloader extends Thread{
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(source).openConnection();
             conn.setRequestMethod("GET");
+
+            boolean downloadFirst = false;
+
             for (Map.Entry<String, String> header :
                     req.getRequestHeaders().entrySet()) {
-                conn.setRequestProperty(header.getKey(), header.getValue());
+                if(!header.getKey().equals("Range")) {
+                    conn.setRequestProperty(header.getKey(), header.getValue());
+                }
+                else{
+                    downloadFirst = true;
+                }
             }
             conn.connect();
             byte[] buffer = new byte[4096];
             InputStream is = conn.getInputStream();
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-
+            boolean canWrite = true;
             int len = 0;
             while ((len = is.read(buffer)) != -1) {
                 os.write(buffer, 0, len);
                 os.flush();
-                pout.write(buffer,0,len);
-                pout.flush();
+                try{
+                    if(canWrite){
+                        pout.write(buffer,0,len);
+                        pout.flush();
+                    }
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                    canWrite = false;
+                }
             }
             is.close();
             try{
@@ -897,6 +912,7 @@ class AsyncWebDownloader extends Thread{
             conn.disconnect();
 
         }catch (IOException ex){
+            ex.printStackTrace();
             try {
                 pout.close();
             } catch (IOException e) {
