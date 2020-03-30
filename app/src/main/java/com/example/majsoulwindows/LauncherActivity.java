@@ -310,4 +310,29 @@ public class LauncherActivity extends Activity {
             }
         }).create().show();
     }
+
+    private String[] servername ={"国服（中文）","日服（日本语）","国际服（English）"};
+    private String[] serverUrl={
+            "https://www.majsoul.com/1/",
+            "https://game.mahjongsoul.com/",
+            "https://mahjongsoul.game.yo-star.com/"
+
+    };
+    private String[] cachepath={
+            "zh",
+            "jp",
+            "en"
+
+    };
+    public void setServer(View view) {
+        new AlertDialog.Builder(this).setTitle("选择服务器").setItems(servername, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                getSharedPreferences("0",0).edit().putString("url",serverUrl[i]).commit();
+                getSharedPreferences("0",0).edit().putString("tmp",cachepath[i]).commit();
+                Toast.makeText(LauncherActivity.this, "已设置"+servername[i], Toast.LENGTH_SHORT).show();
+            }
+        }).create().show();
+
+    }
 }

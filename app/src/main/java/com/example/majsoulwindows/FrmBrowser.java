@@ -34,6 +34,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -43,10 +44,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.SequenceInputStream;
 import java.lang.reflect.ParameterizedType;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +75,8 @@ public class FrmBrowser extends StandOutWindow {
 
     public HashMap<String,String> clipboardFinder = new HashMap<>();
 
-    private static String baseUrl = "https://www.majsoul.com/1/";
+    public static String baseUrl = "https://www.majsoul.com/1/";
+    public static String cachepref = "zh";
     WebView mWebView;
 
     @Override
@@ -84,8 +89,13 @@ public class FrmBrowser extends StandOutWindow {
         return R.drawable.ic;
     }
 
+
+
     @Override
     public void createAndAttachView(int id, FrameLayout frame) {
+        baseUrl = getSharedPreferences("0",0).getString("url","https://www.majsoul.com/1/");
+        cachepref = getSharedPreferences("0",0).getString("tmp","zh");
+
         this.mWebView = new WebView(this);
         frame.addView(mWebView);
         renderW = getSharedPreferences("0",0).getInt("rw",854);
@@ -155,38 +165,22 @@ public class FrmBrowser extends StandOutWindow {
                             }
                             else {
                                 try {
-                                    HttpURLConnection conn = (HttpURLConnection) new URL(resUrl.replace("<INDEX>", "")).openConnection();
-                                    conn.setRequestMethod("GET");
-                                    for (Map.Entry<String, String> header :
-                                            request.getRequestHeaders().entrySet()) {
-                                        conn.setRequestProperty(header.getKey(), header.getValue());
-                                    }
-                                    conn.connect();
-                                    byte[] buffer = new byte[4096];
-                                    InputStream is = conn.getInputStream();
-                                    ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-                                    int len = 0;
-                                    while ((len = is.read(buffer)) != -1) {
-                                        os.write(buffer, 0, len);
-                                        os.flush();
-                                    }
-                                    is.close();
+                                    String source = resUrl.replace("<INDEX>", "");
+                                    String dest = cache.getAbsolutePath();
 
-                                    cache.getParentFile().mkdirs();
-                                    cache.createNewFile();
-                                    OutputStream fos = new FileOutputStream(cache);
-                                    os.writeTo(fos);
-                                    os.close();
-                                    fos.close();
-                                    conn.disconnect();
+                                    AsyncWebDownloader downer = new AsyncWebDownloader(request,source,dest);
 
-                                    Log.e("MAKE_CACHE", resUrl + " -> " + urlToLocalPath(resUrl, getBaseDir()));
+                                    InputStream cacheIs = downer.getParallelInputStream();
+
+                                    downer.start();
+
+                                    Log.e("MAKE_CACHE", source + " -> " + dest);
 
                                     if(resUrl.endsWith("/code.js")){
-                                        return new WebResourceResponse(type, null, getModedStream(new FileInputStream(cache)));
+                                        return new WebResourceResponse(type, null, getModedStream(cacheIs));
                                     }
-                                    return new WebResourceResponse(type, null, new FileInputStream(cache));
+                                    return new WebResourceResponse(type, null, cacheIs);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                     try {
@@ -281,7 +275,7 @@ public class FrmBrowser extends StandOutWindow {
                 if (!path.endsWith("/")) {
                     path += "/";
                 }
-                return path + "webres/";
+                return path +cachepref+ "/webres/";
             }
 
             String getPatchDir() {
@@ -289,14 +283,14 @@ public class FrmBrowser extends StandOutWindow {
                 if (!path.endsWith("/")) {
                     path += "/";
                 }
-                return path + "patch/";
+                return path +cachepref+ "/patch/";
             }
             String getModDir() {
                 String path = getExternalFilesDir(null).getAbsolutePath();
                 if (!path.endsWith("/")) {
                     path += "/";
                 }
-                return path + "mods/";
+                return path +cachepref+ "/mods/";
             }
         });
         this.mWebView.setWebChromeClient(new WebChromeClient() {
@@ -356,6 +350,7 @@ public class FrmBrowser extends StandOutWindow {
             }
         }
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mWebView.getLayoutParams();
+        frame.setClickable(true);
         lp.width=renderW;
         lp.height = renderH;
         mWebView.setLayoutParams(lp);
@@ -368,10 +363,8 @@ public class FrmBrowser extends StandOutWindow {
     int renderW=854,renderH=480;
 
     public void loadClipboardMap(){
-        clipboardFinder.put("https://www.majsoul.com/1/?room=","好友房链接");
-        clipboardFinder.put("http://www.majsoul.com/1/?room=","好友房链接");
-        clipboardFinder.put("https://www.majsoul.com/1/?paipu=","牌谱链接");
-        clipboardFinder.put("http://www.majsoul.com/1/?paipu=","牌谱链接");
+        clipboardFinder.put(baseUrl+"?room=","好友房链接");
+        clipboardFinder.put(baseUrl+"?paipu=","牌谱链接");
     }
 
 
@@ -705,7 +698,7 @@ public class FrmBrowser extends StandOutWindow {
     public int getFlags(int id) {
         return super.getFlags(id)
 //                | StandOutFlags.FLAG_DECORATION_CLOSE_DISABLE
-                |StandOutFlags.FLAG_WINDOW_BRING_TO_FRONT_ON_TAP
+//                |StandOutFlags.FLAG_WINDOW_BRING_TO_FRONT_ON_TAP
                 |StandOutFlags.FLAG_WINDOW_HIDE_ENABLE
 //                |StandOutFlags.FLAG_BODY_MOVE_ENABLE
 //                |StandOutFlags.FLAG_BODY_MOVE_ENABLE
@@ -847,5 +840,73 @@ public class FrmBrowser extends StandOutWindow {
 
 
 
+
+}
+
+class AsyncWebDownloader extends Thread{
+    private java.io.PipedInputStream pin;
+    private java.io.PipedOutputStream pout;
+    private WebResourceRequest req;
+    private String source;
+    private String dest;
+
+    public AsyncWebDownloader(WebResourceRequest req, String source, String dest) throws IOException {
+        this.req = req;
+        this.source = source;
+        this.dest = dest;
+        pin = new PipedInputStream();
+        pout = new PipedOutputStream();
+        pin.connect(pout);
+    }
+
+    @Override
+    public void run()   {
+
+        try {
+            HttpURLConnection conn = (HttpURLConnection) new URL(source).openConnection();
+            conn.setRequestMethod("GET");
+            for (Map.Entry<String, String> header :
+                    req.getRequestHeaders().entrySet()) {
+                conn.setRequestProperty(header.getKey(), header.getValue());
+            }
+            conn.connect();
+            byte[] buffer = new byte[4096];
+            InputStream is = conn.getInputStream();
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+            int len = 0;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+                os.flush();
+                pout.write(buffer,0,len);
+                pout.flush();
+            }
+            is.close();
+            try{
+                pout.close();
+            }catch (IOException ex){
+                ex.printStackTrace();
+            }
+            File cache = new File(dest);
+            cache.getParentFile().mkdirs();
+            cache.createNewFile();
+            OutputStream fos = new FileOutputStream(cache);
+            os.writeTo(fos);
+            os.close();
+            fos.close();
+            conn.disconnect();
+
+        }catch (IOException ex){
+            try {
+                pout.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public InputStream getParallelInputStream(){
+        return pin;
+    }
 
 }

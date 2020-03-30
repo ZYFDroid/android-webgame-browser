@@ -67,6 +67,11 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="切换服务器"
+            android:onClick="setServer"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
 
             android:text="重置窗口位置"
             android:onClick="resetposition"/>
