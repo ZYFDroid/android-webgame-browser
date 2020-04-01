@@ -6,4 +6,5 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
     <style name="InGameTheme" parent="android:Theme.DeviceDefault.NoActionBar.Fullscreen"/>
+    <style name="StandardTheme" parent="android:Theme.DeviceDefault.Light.DarkActionBar"/>
 </resources>

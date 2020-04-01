@@ -23,9 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#000"
-            android:clickable="true"
-            android:onClick="hidefunc"
-            android:text="雀魂 窗口化  Windows MajsoulVer 帮助"/>
+            android:text="雀魂 窗口化 Majsoul Windows Ver 帮助"/>
 
 
         <Button
@@ -33,7 +31,16 @@
             android:layout_height="wrap_content"
             android:onClick="introduce"
             android:text="功能介绍"/>
-
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="github"
+            android:text="开放源代码地址"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="update"
+            android:text="检查新版本"/>
 
     </LinearLayout>
 </FrameLayout>

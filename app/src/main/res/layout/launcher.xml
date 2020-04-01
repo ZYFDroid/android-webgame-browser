@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#000"
-            android:text="雀魂 窗口化  Windows MajsoulVer 启动器"/>
+            android:text="雀魂 窗口化 Majsoul Windows Ver 客户端"/>
 
         <Button
             android:layout_width="match_parent"

@@ -155,7 +155,7 @@ public class SettingActivity extends Activity {
             "https://mahjongsoul.game.yo-star.com/"
 
     };
-    private String[] cachepath={
+    public static String[] cachepath={
             "zh",
             "jp",
             "en"
@@ -173,4 +173,12 @@ public class SettingActivity extends Activity {
 
     }
 
+    public void loadPlugin(View view) {
+        if(!hasStorage()){
+            Toast.makeText(this, "存储权限没有获取", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        startActivity(new Intent(this,PluginActivity.class));
+        finish();
+    }
 }

@@ -32,13 +32,18 @@
 
         <activity android:name=".SettingActivity" />
         <activity android:name=".AboutActivity" />
-
-        <activity android:name=".FullScreenActivity"
+        <activity
+            android:name=".FullScreenActivity"
             android:configChanges="screenSize|keyboard|keyboardHidden|orientation|smallestScreenSize|screenLayout"
-            android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="sensorLandscape"
             android:resizeableActivity="true"
-            android:theme="@style/InGameTheme"></activity>
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/InGameTheme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".PluginActivity"
+            android:theme="@style/StandardTheme"
+            android:screenOrientation="portrait"
+            android:resizeableActivity="false" />
     </application>
 
 </manifest>

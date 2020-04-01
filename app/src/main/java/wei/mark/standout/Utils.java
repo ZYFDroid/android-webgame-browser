@@ -22,7 +22,7 @@ public class Utils {
 
 	public static final String yes="是的";
 	public static final String no ="不是";
-	public static final String uhh="这...";
+	public static final String uhh="好";
 
 	public static void Confirm(Context ctx, String msg, final Runnable action){
 		AlertDialog ald =  new AlertDialog.Builder(ctx).setMessage(msg).setPositiveButton(yes, new DialogInterface.OnClickListener() {
