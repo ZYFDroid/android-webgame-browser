@@ -23,9 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#000"
-            android:clickable="true"
-            android:onClick="hidefunc"
-            android:text="雀魂麻将Majsoul Windows Ver~ 启动器"/>
+            android:text="雀魂 窗口化  Windows MajsoulVer 启动器"/>
 
         <Button
             android:layout_width="match_parent"
@@ -44,49 +42,31 @@
             android:onClick="storage"/>
 
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="调试模式"
-            android:visibility="gone"
-            android:onClick="debug"/>
-
-
-
 
         <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="开始游戏"
+        android:text="窗口化启动"
         android:onClick="start"/>
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="设置分辨率(影响耗电)"
-            android:onClick="setResolution"/>
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="切换服务器"
-            android:onClick="setServer"/>
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:text="重置窗口位置"
-            android:onClick="resetposition"/>
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="全屏启动"
+            android:onClick="startfull"/>
 
-            android:text="应用信息"
-            android:onClick="appinfo"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="introduce"
-            android:text="功能介绍"/>
+            android:onClick="setting"
+            android:text="设置"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="help"
+            android:text="帮助"/>
+
 
 
     </LinearLayout>
