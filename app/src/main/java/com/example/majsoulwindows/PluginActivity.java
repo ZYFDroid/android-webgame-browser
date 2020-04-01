@@ -64,7 +64,8 @@ public class PluginActivity extends Activity {
                         String path = pifo.applicationInfo.sourceDir;
                         String version = pifo.versionName;
                         String desc = info.activityInfo.metaData.getString("mswin-addons-desc","无描述");
-                        apps.add(new AppInfo(info.activityInfo.loadIcon(getPackageManager()),info.activityInfo.loadLabel(getPackageManager()).toString(),path,desc,version));
+                        String author = info.activityInfo.metaData.getString("mswin-addons-author","未知");
+                        apps.add(new AppInfo(info.activityInfo.loadIcon(getPackageManager()),info.activityInfo.loadLabel(getPackageManager()).toString(),path,desc,version,author));
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -96,17 +97,20 @@ public class PluginActivity extends Activity {
         TextView viewName;
         TextView viewDesc;
         TextView viewVer;
+        TextView viewAuthor;
     }
     class AppInfo{
         Drawable bmp;String name;
         String apppath;
         String desc,version;
-        public AppInfo(Drawable bmp, String name,String apppath,String desc,String version) {
+        String author;
+        public AppInfo(Drawable bmp, String name,String apppath,String desc,String version,String author) {
             this.bmp = bmp;
             this.name = name;
             this.apppath = apppath;
             this.desc = desc;
             this.version = version;
+            this.author = author;
         }
     }
 
@@ -134,6 +138,7 @@ public class PluginActivity extends Activity {
                 holder.viewName = (TextView) layout.findViewById(R.id.viewName);
                 holder.viewDesc = (TextView) layout.findViewById(R.id.viewDesc);
                 holder.viewVer = (TextView) layout.findViewById(R.id.viewVer);
+                holder.viewAuthor = (TextView) layout.findViewById(R.id.viewAuthor);
                 layout.setTag(holder);
             }
             else
@@ -147,6 +152,7 @@ public class PluginActivity extends Activity {
             holder.viewName.setText(info.name);
             holder.viewVer.setText(info.version);
             holder.viewDesc.setText(info.desc);
+            holder.viewAuthor.setText("作者："+info.author);
             return layout;
         }
 
