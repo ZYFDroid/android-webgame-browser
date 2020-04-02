@@ -70,7 +70,7 @@ import wei.mark.standout.ui.Window;
 
 public class FrmBrowser extends StandOutWindow {
 
-    //public static boolean isRunning = false;
+    public static boolean isRunning = false;
 
 
     public HashMap<String,String> clipboardFinder = new HashMap<>();
@@ -94,6 +94,7 @@ public class FrmBrowser extends StandOutWindow {
     public void createAndAttachView(int id, FrameLayout frame) {
         baseUrl = getSharedPreferences("0",0).getString("url","https://www.majsoul.com/1/");
 
+        isRunning = true;
 
         this.mWebView = new WebView(this);
         frame.addView(mWebView);
@@ -396,6 +397,7 @@ public class FrmBrowser extends StandOutWindow {
         getSharedPreferences("0",0).edit().putInt("ww",window.getLayoutParams().width).commit();
         getSharedPreferences("0",0).edit().putInt("wh",window.getLayoutParams().height).commit();
         mWebView.destroy();
+        isRunning = false;
         return super.onClose(id, window);
     }
 
@@ -441,25 +443,6 @@ public class FrmBrowser extends StandOutWindow {
             }
         }));
 
-        list.add(new DropDownListItem(android.R.drawable.ic_menu_compass, "恶搞截图", new Runnable() {
-            @Override
-            public void run() {
-
-                new Utils.EditDialog(FrmBrowser.this,"输入对话框内容","您吃了把四，要卸载游戏吗？"){
-                    @Override
-                    public void onConfirmText(final String text) {
-                        Utils.Prompt(FrmBrowser.this, text, new Utils.OnPromptResult() {
-                            @Override
-                            public void onResult(boolean isYesPressed) {
-
-                            }
-                        });
-                    }
-                }.show();
-            }
-        }));
-
-
         return list;
     }
 
@@ -482,14 +465,7 @@ public class FrmBrowser extends StandOutWindow {
 
     public int getFlags(int id) {
         return super.getFlags(id)
-//                | StandOutFlags.FLAG_DECORATION_CLOSE_DISABLE
-//                |StandOutFlags.FLAG_WINDOW_BRING_TO_FRONT_ON_TAP
                 |StandOutFlags.FLAG_WINDOW_HIDE_ENABLE
-//                |StandOutFlags.FLAG_BODY_MOVE_ENABLE
-//                |StandOutFlags.FLAG_BODY_MOVE_ENABLE
-//                |StandOutFlags.FLAG_BODY_MOVE_ENABLE
-//                | StandOutFlags.FLAG_WINDOW_EDGE_LIMITS_ENABLE
-
                 |StandOutFlags.FLAG_BODY_MOVE_ENABLE
                 |StandOutFlags.FLAG_DECORATION_SYSTEM;
     }

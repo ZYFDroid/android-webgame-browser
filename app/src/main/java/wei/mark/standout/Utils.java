@@ -154,6 +154,16 @@ public class Utils {
 		public abstract void onConfirmText(String text);
 	}
 
+	public static void showDialogVersion(Context ctx,String key,int version,String message){
+		if(ctx.getSharedPreferences("0",0).getInt(key,-1) < version){
+			Utils.showDialog(ctx,message);
+		}
+	}
+
+	public static void setDialogVersion(Context ctx,String key,int version){
+		ctx.getSharedPreferences("0",0).edit().putInt(key,version).commit();
+	}
+
 }
 
 

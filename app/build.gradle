@@ -7,8 +7,8 @@ android {
         applicationId "com.example.majsoulwindows"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 2501
-        versionName "2.5.0.1"
+        versionCode 2503
+        versionName "2.5.0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

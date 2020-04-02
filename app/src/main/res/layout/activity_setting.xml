@@ -3,7 +3,6 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:gravity="center"
     android:clickable="true"
-    android:onClick="close"
     android:layout_height="match_parent">
     <FrameLayout
         android:layout_width="wrap_content"
@@ -41,12 +40,12 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="设置分辨率(影响耗电)"
+                android:text="变更分辨率(影响耗电)"
                 android:onClick="setResolution"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="切换服务器"
+                android:text="变更服务器"
                 android:onClick="setServer"/>
             <Button
                 android:layout_width="match_parent"
@@ -54,6 +53,13 @@
 
                 android:text="重置窗口位置"
                 android:onClick="resetposition"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="变更窗口标题"
+                android:onClick="setwindowtitle"/>
 
             <Button
                 android:layout_width="match_parent"

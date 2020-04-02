@@ -26,11 +26,15 @@ import wei.mark.standout.Utils;
 public class FullScreenActivity extends Activity {
     public HashMap<String,String> clipboardFinder = new HashMap<>();
     public static String baseUrl = "https://www.majsoul.com/1/";
+
+    public static boolean isRunning = false;
+
     WebView mWebView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fullscreen);
+        isRunning = true;
         rootView = findViewById(R.id.rootView);
         FrameLayout frame = rootView;
         baseUrl = getSharedPreferences("0",0).getString("url","https://www.majsoul.com/1/");
@@ -193,6 +197,7 @@ public class FullScreenActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        isRunning = false;
         mWebView.destroy();
     }
 

@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import wei.mark.standout.StandOutWindow;
+import wei.mark.standout.Utils;
 
 import static wei.mark.standout.Utils.no;
 import static wei.mark.standout.Utils.yes;
@@ -180,5 +181,16 @@ public class SettingActivity extends Activity {
         }
         startActivity(new Intent(this,PluginActivity.class));
         finish();
+    }
+
+    public void setwindowtitle(View view) {
+        new Utils.EditDialog(this,"请输入窗口标题",getSharedPreferences("0",0).getString("wndtext","雀魂麻将majsoul - Windows Ver~")){
+
+            @Override
+            public void onConfirmText(String text) {
+                getSharedPreferences("0",0).edit().putString("wndtext",text).commit();
+                Toast.makeText(SettingActivity.this, "变更成功。下次生效", Toast.LENGTH_SHORT).show();
+            }
+        }.show();
     }
 }

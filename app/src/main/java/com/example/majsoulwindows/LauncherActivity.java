@@ -3,6 +3,7 @@ package com.example.majsoulwindows;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,6 +29,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import wei.mark.standout.StandOutWindow;
+import wei.mark.standout.Utils;
 
 import static android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION;
 import static wei.mark.standout.Utils.no;
@@ -45,7 +47,7 @@ public class LauncherActivity extends Activity {
         setContentView(R.layout.launcher);
 
 
-
+        Utils.showDialogVersion(this,"firstrun", 1,"第一次使用，请先阅读 关于 里的功能介绍。阅读一次之后该提示将不再显示");
 
     }
 
@@ -92,6 +94,11 @@ public class LauncherActivity extends Activity {
         }
         if(!hasStorage()) {
             Toast.makeText(this, "存储权限没有获取，无法使用加速功能", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(FullScreenActivity.isRunning){
+            Toast.makeText(this, "禁止多开。如果你没有多开，请强行停止本应用以示清白", Toast.LENGTH_SHORT).show();
             return;
         }
         startAfterPermission();
@@ -146,6 +153,12 @@ public class LauncherActivity extends Activity {
             Toast.makeText(this, "存储权限没有获取，无法使用加速功能", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        if(FrmBrowser.isRunning){
+            Toast.makeText(this, "禁止多开。如果你没有多开，请强行停止本应用以示清白", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         startActivity(new Intent(this,FullScreenActivity.class));
         finish();
     }

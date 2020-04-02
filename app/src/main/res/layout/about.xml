@@ -2,8 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:gravity="center"
-    android:clickable="true"
-    android:onClick="close"
     android:layout_height="match_parent">
 <FrameLayout
     android:layout_width="wrap_content"
@@ -31,6 +29,11 @@
             android:layout_height="wrap_content"
             android:onClick="introduce"
             android:text="功能介绍"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="support"
+            android:text="赞助与支持"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

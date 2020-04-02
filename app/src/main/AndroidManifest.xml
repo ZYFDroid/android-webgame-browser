@@ -43,6 +43,7 @@
             android:name=".PluginActivity"
             android:theme="@style/StandardTheme"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:resizeableActivity="false" />
     </application>
 

@@ -255,6 +255,7 @@ public class PluginActivity extends Activity {
                             ZipEntry src = zipf.getEntry("assets/"+sourceFile);
                             File fout =new File(getAddonRootDir(targetserver,filetype)+destPath);
                             if(!fout.getParentFile().exists()){fout.getParentFile().mkdirs();}
+                            if(fout.exists()){fout.delete();}
                             fout.createNewFile();
                             InputStream zin = zipf.getInputStream(src);
                             FileOutputStream fos = new FileOutputStream(fout,false);
