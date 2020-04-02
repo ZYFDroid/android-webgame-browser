@@ -31,25 +31,24 @@ public class Utils {
 				action.run();
 			}
 		}).setNegativeButton(no,null).create();
-		if (Build.VERSION.SDK_INT >= 26) {
-			ald.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-		}
-		else{
-			ald.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-		}
+
+			ald.getWindow().setType(getFlagCompat());
+
 		ald.show();
 	}
 
 	public static void showDialog(Context ctx, String msg){
 		AlertDialog ald =  new AlertDialog.Builder(ctx).setMessage(msg).setPositiveButton(uhh,null).create();
 
-		if (Build.VERSION.SDK_INT >= 26) {
-			ald.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-		}
-		else{
-			ald.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-		}
+        ald.getWindow().setType(getFlagCompat());
 		ald.show();
+	}
+
+	public static int getFlagCompat(){
+		if(Build.VERSION.SDK_INT>=26){
+			return WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+		}
+		return WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
 	}
 
 	public static void Prompt(Context ctx, String msg, final OnPromptResult action){
@@ -64,12 +63,7 @@ public class Utils {
 				action.onResult(false);
 			}
 		}).setCancelable(false).create();
-		if (Build.VERSION.SDK_INT >= 26) {
-			ald.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-		}
-		else{
-			ald.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-		}
+        ald.getWindow().setType(getFlagCompat());
 		ald.show();
 	}
 
@@ -92,12 +86,7 @@ public class Utils {
 		public void show(){
 			onCreate();
 
-			if (Build.VERSION.SDK_INT >= 26) {
-				adbd.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-			}
-			else{
-				adbd.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-			}
+            adbd.getWindow().setType(getFlagCompat());
 			adbd.show();
 		}
 

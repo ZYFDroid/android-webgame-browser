@@ -22,6 +22,7 @@ public class AboutActivity extends Activity {
     public void introduce(View view) {
         String msg="雀魂麻将Majsoul Windows Ver~ 客户端\n" +
                 "\n（第一次启动会比较慢，建议第一次启动先打一把人机或点开一个牌谱）" +
+                "\n（窗口模式下，选中文本（例如牌谱，友人房链接）需要点左上角图标复制）\n" +
                 "-最大化/最小化隐藏/自由调整大小(需要悬浮窗权限)\n" +
                 "-随手研发(可能)加速引擎，加载更快，更省流量\n" +
                 "-复制牌谱/好友房链接打开客户端会有提示(安卓10.0不支持)\n" +
@@ -34,7 +35,7 @@ public class AboutActivity extends Activity {
                 "如果你喜欢这个项目，请在github为我点个star（如果你不知道什么是github就算了）";
         AlertDialog ald =  new AlertDialog.Builder(this).setTitle("功能介绍").setMessage(msg).setPositiveButton(android.R.string.ok,null).create();
         ald.show();
-        Utils.setDialogVersion(this,"firstrun",1);
+        Utils.setDialogVersion(this,"firstrun",2);
     }
 
     public void support(View v){

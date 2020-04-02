@@ -14,8 +14,10 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -838,7 +840,7 @@ public abstract class StandOutWindow extends Service {
 		}
 
 		Drawable background = getResources().getDrawable(
-				android.R.drawable.editbox_dropdown_dark_frame);
+				android.R.drawable.editbox_dropdown_dark_frame,null);
 		dropDown.setBackgroundDrawable(background);
 		return dropDown;
 	}
@@ -1850,12 +1852,15 @@ public abstract class StandOutWindow extends Service {
 		 */
 		public int minWidth, minHeight, maxWidth, maxHeight;
 
+
+
+
 		/**
 		 * @param id
 		 *            The id of the window.
 		 */
 		public StandOutLayoutParams(int id) {
-			super(200, 200, TYPE_PHONE,
+			super(200, 200, Utils.getFlagCompat(),
 					StandOutLayoutParams.FLAG_NOT_TOUCH_MODAL
 							| StandOutLayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
 					PixelFormat.TRANSLUCENT);
@@ -1917,8 +1922,10 @@ public abstract class StandOutWindow extends Service {
 			}
 
 			Display display = mWindowManager.getDefaultDisplay();
-			int width = display.getWidth();
-			int height = display.getHeight();
+			Point screenPt = new Point();
+			display.getSize(screenPt);
+			int width = screenPt.x;
+			int height = screenPt.y;
 
 			if (x == RIGHT) {
 				x = width - w;
@@ -1986,7 +1993,9 @@ public abstract class StandOutWindow extends Service {
 		// helper to create cascading windows
 		private int getX(int id, int width) {
 			Display display = mWindowManager.getDefaultDisplay();
-			int displayWidth = display.getWidth();
+			Point screenPt = new Point();
+			display.getSize(screenPt);
+			int displayWidth = screenPt.x;
 
 			int types = sWindowCache.size();
 
@@ -2000,8 +2009,10 @@ public abstract class StandOutWindow extends Service {
 		// helper to create cascading windows
 		private int getY(int id, int height) {
 			Display display = mWindowManager.getDefaultDisplay();
-			int displayWidth = display.getWidth();
-			int displayHeight = display.getHeight();
+			Point screenPt = new Point();
+			display.getSize(screenPt);
+			int displayWidth = screenPt.x;
+			int displayHeight = screenPt.y;
 
 			int types = sWindowCache.size();
 

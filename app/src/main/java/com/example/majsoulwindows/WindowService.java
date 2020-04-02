@@ -8,6 +8,7 @@ import android.graphics.*;
 import android.util.*;
 
 import wei.mark.standout.StandOutWindow;
+import wei.mark.standout.Utils;
 
 public class WindowService extends Service
 {
@@ -39,18 +40,15 @@ public class WindowService extends Service
         mInstance=this;
         createToucher();
     }
+
+    @SuppressWarnings("WrongConstant")
     private void createToucher()
     {
         //赋值WindowManager&LayoutParam.
         params = new WindowManager.LayoutParams();
         windowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
         //设置type.系统提示型窗口，一般都在应用程序窗口之上.
-        if (Build.VERSION.SDK_INT >= 26) {
-            params.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-        }
-        else {
-            params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-        }
+         params.type = Utils.getFlagCompat();
         //设置效果为背景透明.
         params.format = PixelFormat.RGBA_8888;
         //设置flags.不可聚焦及不可使用按钮对悬浮窗进行操控.

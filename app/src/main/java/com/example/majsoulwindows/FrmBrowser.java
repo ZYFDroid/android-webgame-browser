@@ -22,6 +22,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
+import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.MimeTypeMap;
 import android.webkit.SafeBrowsingResponse;
@@ -33,6 +34,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -89,6 +91,44 @@ public class FrmBrowser extends StandOutWindow {
     }
 
 
+    private void getSelectedData() {
+        String js = "(function getSelectedText() {" +
+                "var txt;" +
+                "if (window.getSelection) {" +
+                "txt = window.getSelection().toString();" +
+                "} else if (window.document.getSelection) {" +
+                "txt = window.document.getSelection().toString();" +
+                "} else if (window.document.selection) {" +
+                "txt = window.document.selection.createRange().text;" +
+                "}else{txt=\"\";}" +
+                "CopyInterfaceCallback.onSelectionCallback(txt);" +
+                "})()";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mWebView.evaluateJavascript("javascript:" + js, null);
+        } else {
+            mWebView.loadUrl("javascript:" + js);
+        }
+    }
+
+
+    class SelectionCallback{
+        @JavascriptInterface
+        public void onSelectionCallback(final String text){
+            if(text.length()>0){
+                new Utils.EditDialog(FrmBrowser.this, "复制文本", text) {
+                    @Override
+                    public void onConfirmText(String text) {
+                        setClipboard(text);
+                        Toast.makeText(FrmBrowser.this, "文本已复制到剪切板", Toast.LENGTH_SHORT).show();
+                    }
+                }.show();
+            }
+            else{
+                Toast.makeText(FrmBrowser.this, "没有选中文本", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
 
     @Override
     public void createAndAttachView(int id, FrameLayout frame) {
@@ -97,6 +137,9 @@ public class FrmBrowser extends StandOutWindow {
         isRunning = true;
 
         this.mWebView = new WebView(this);
+
+        mWebView.addJavascriptInterface(new SelectionCallback(),"CopyInterfaceCallback");
+
         frame.addView(mWebView);
         renderW = getSharedPreferences("0",0).getInt("rw",854);
         renderH = getSharedPreferences("0",0).getInt("rh",480);
@@ -174,7 +217,17 @@ public class FrmBrowser extends StandOutWindow {
             }
         }
     }
-
+    public void setClipboard(String text){
+        ClipboardManager manager = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
+        if (manager != null) {
+            try {
+                manager.setPrimaryClip(manager.getPrimaryClip());
+                manager.setPrimaryClip(ClipData.newPlainText(null, text));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     FrameLayout rootView;
     void scaleView(){
         float pw = rootView.getWidth();
@@ -432,6 +485,13 @@ public class FrmBrowser extends StandOutWindow {
             }
         }));
 
+        list.add(new DropDownListItem(android.R.drawable.ic_menu_edit, "复制选中内容", new Runnable() {
+            @Override
+            public void run() {
+                getSelectedData();
+            }
+        }));
+
 
         list.add(new DropDownListItem(android.R.drawable.ic_menu_crop, "翻转画面", new Runnable() {
             @Override
@@ -448,13 +508,7 @@ public class FrmBrowser extends StandOutWindow {
     public StandOutLayoutParams getParams(int id, Window window) {
         StandOutLayoutParams slp = new StandOutLayoutParams(id, dip2px(this,240), dip2px(this,200),
                 StandOutLayoutParams.CENTER, StandOutLayoutParams.CENTER,dip2px(this,200), dip2px(this,150));
-        if(Build.VERSION.SDK_INT >= 26){
-            slp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-        }
-        else{
-            slp.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-        }
-
+        slp.type = Utils.getFlagCompat();
         return slp;
     }
 

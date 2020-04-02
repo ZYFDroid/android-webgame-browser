@@ -46,8 +46,15 @@ public class LauncherActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.launcher);
 
+        if(hasFloatWindow()){
+            findViewById(R.id.btnFloat).setVisibility(View.GONE);
+        }
 
-        Utils.showDialogVersion(this,"firstrun", 1,"第一次使用，请先阅读 关于 里的功能介绍。阅读一次之后该提示将不再显示");
+        if(hasStorage()){
+            findViewById(R.id.btnStorage).setVisibility(View.GONE);
+        }
+
+        Utils.showDialogVersion(this,"firstrun", 2,"第一次使用，请先阅读 帮助 里的 功能介绍。阅读一次之后该提示将不再显示");
 
     }
 
