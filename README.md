@@ -20,3 +20,5 @@
 
 - 
 [点我下载](https://github.com/ZYFDroid/android-majsoul-windows/releases)
+
+- [日服中文插件](https://github.com/ZYFDroid/android-majsoul-windows/releases/tag/2.5.0.1)
