@@ -100,41 +100,9 @@ public class FrmBrowser extends StandOutWindow {
         frame.addView(mWebView);
         renderW = getSharedPreferences("0",0).getInt("rw",854);
         renderH = getSharedPreferences("0",0).getInt("rh",480);
-        //this.mWebView.setWebViewClient(new baseUrl(this));
 
         WebGameBoostEngine.boost(this,mWebView,baseUrl);
 
-        if (Build.VERSION.SDK_INT <= 28) {
-            loadClipboardMap();
-            String clipboardData = paste(this);
-            for (String key : clipboardFinder.keySet()) {
-                if (clipboardData.contains(key)) {
-                    final String targetUrl = findFirstUrl(clipboardData);
-                    Utils.Prompt(this, "您复制了一个 " + clipboardFinder.get(key) + "，打开它吗？", new Utils.OnPromptResult() {
-                        @Override
-                        public void onResult(boolean isYesPressed) {
-                            if (isYesPressed) {
-                                mWebView.loadUrl(targetUrl);
-                            } else {
-                                mWebView.loadUrl(baseUrl);
-
-                            }
-
-                            Utils.Prompt(FrmBrowser.this, "是否删除剪切板中的链接？", new Utils.OnPromptResult() {
-                                @Override
-                                public void onResult(boolean isYesPressed) {
-                                    if (isYesPressed) {
-                                        clearClipboard();
-                                    }
-                                }
-                            });
-
-                        }
-                    });
-                    return;
-                }
-            }
-        }
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mWebView.getLayoutParams();
         frame.setClickable(true);
         lp.width=renderW;
@@ -143,6 +111,44 @@ public class FrmBrowser extends StandOutWindow {
         lp.gravity = Gravity.CENTER;
         rootView = frame;
         scaleView();
+
+        if (Build.VERSION.SDK_INT <= 28) {
+            loadClipboardMap();
+            String clipboardData = paste(this);
+            for (String key : clipboardFinder.keySet()) {
+                if (clipboardData.contains(key)) {
+                    final String targetUrl = findFirstUrl(clipboardData);
+                    final String what = key;
+                    hWnd.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Utils.Prompt(FrmBrowser.this, "您复制了一个 " + clipboardFinder.get(what) + "，打开它吗？", new Utils.OnPromptResult() {
+                                @Override
+                                public void onResult(boolean isYesPressed) {
+                                    if (isYesPressed) {
+                                        mWebView.loadUrl(targetUrl);
+                                    } else {
+                                        mWebView.loadUrl(baseUrl);
+
+                                    }
+
+                                    Utils.Prompt(FrmBrowser.this, "是否删除剪切板中的链接？", new Utils.OnPromptResult() {
+                                        @Override
+                                        public void onResult(boolean isYesPressed) {
+                                            if (isYesPressed) {
+                                                clearClipboard();
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }, 1000);
+                    return;
+                }
+            }
+        }
+
         mWebView.loadUrl(baseUrl);
     }
 
@@ -150,7 +156,9 @@ public class FrmBrowser extends StandOutWindow {
 
     public void loadClipboardMap(){
         clipboardFinder.put(baseUrl+"?room=","好友房链接");
+        clipboardFinder.put(baseUrl.replace("https://","http://")+"?room=","好友房链接");
         clipboardFinder.put(baseUrl+"?paipu=","牌谱链接");
+        clipboardFinder.put(baseUrl.replace("https://","http://")+"?paipu=","牌谱链接");
     }
 
 
@@ -220,8 +228,6 @@ public class FrmBrowser extends StandOutWindow {
         }
     }
 
-
-
     public static String paste(Context context) {
         try {
             ClipboardManager cmb = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -251,9 +257,6 @@ public class FrmBrowser extends StandOutWindow {
         isAnimShow = false;
         return anims;
     }
-
-
-
 
     @Override
     public Animation getShowAnimation(int id) {
@@ -354,10 +357,6 @@ public class FrmBrowser extends StandOutWindow {
         }
     }
 
-
-
-
-
     public static boolean isAnimShow = false;
     @Override
     public boolean onShow(int id, Window window) {
@@ -389,7 +388,6 @@ public class FrmBrowser extends StandOutWindow {
         isAnimHide = true;
         return super.onHide(id, window);
     }
-
     @Override
     public boolean onClose(int id, Window window) {
         getSharedPreferences("0",0).edit().putInt("wx",window.getLayoutParams().x).commit();
@@ -400,7 +398,6 @@ public class FrmBrowser extends StandOutWindow {
         isRunning = false;
         return super.onClose(id, window);
     }
-
     @Override
     public List<DropDownListItem> getDropDownItems(int id) {
         List<DropDownListItem> list = new ArrayList<>();
@@ -445,8 +442,6 @@ public class FrmBrowser extends StandOutWindow {
 
         return list;
     }
-
-
 
     @SuppressWarnings("WrongConstant")
     @Override

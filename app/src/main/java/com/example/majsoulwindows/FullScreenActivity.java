@@ -48,39 +48,7 @@ public class FullScreenActivity extends Activity {
         renderH = getSharedPreferences("0",0).getInt("rh",480);
         //this.mWebView.setWebViewClient(new baseUrl(this));
 
-
-        if (Build.VERSION.SDK_INT <= 28) {
-            loadClipboardMap();
-            String clipboardData = paste(this);
-            for (String key : clipboardFinder.keySet()) {
-                if (clipboardData.contains(key)) {
-                    final String targetUrl = findFirstUrl(clipboardData);
-                    Utils.Prompt(this, "您复制了一个 " + clipboardFinder.get(key) + "，打开它吗？", new Utils.OnPromptResult() {
-                        @Override
-                        public void onResult(boolean isYesPressed) {
-                            if (isYesPressed) {
-                                mWebView.loadUrl(targetUrl);
-                            } else {
-                                mWebView.loadUrl(baseUrl);
-
-                            }
-
-                            Utils.Prompt(FullScreenActivity.this, "是否删除剪切板中的链接？", new Utils.OnPromptResult() {
-                                @Override
-                                public void onResult(boolean isYesPressed) {
-                                    if (isYesPressed) {
-                                        clearClipboard();
-                                    }
-                                }
-                            });
-
-                        }
-                    });
-                    return;
-                }
-            }
-            hWnd.postDelayed(resizer,1000);
-        }
+        hWnd.postDelayed(resizer,1000);
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mWebView.getLayoutParams();
         frame.setClickable(true);
         lp.width=renderW;
@@ -88,7 +56,45 @@ public class FullScreenActivity extends Activity {
         mWebView.setLayoutParams(lp);
         lp.gravity = Gravity.CENTER;
         rootView = frame;
-        scaleView();
+
+
+        if (Build.VERSION.SDK_INT <= 28) {
+            loadClipboardMap();
+            String clipboardData = paste(this);
+            for (String key : clipboardFinder.keySet()) {
+                if (clipboardData.contains(key)) {
+                    final String targetUrl = findFirstUrl(clipboardData);
+                    final String what = key;
+                    hWnd.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Utils.Prompt(FullScreenActivity.this, "您复制了一个 " + clipboardFinder.get(what) + "，打开它吗？", new Utils.OnPromptResult() {
+                                @Override
+                                public void onResult(boolean isYesPressed) {
+                                    if (isYesPressed) {
+                                        mWebView.loadUrl(targetUrl);
+                                    } else {
+                                        mWebView.loadUrl(baseUrl);
+
+                                    }
+
+                                    Utils.Prompt(FullScreenActivity.this, "是否删除剪切板中的链接？", new Utils.OnPromptResult() {
+                                        @Override
+                                        public void onResult(boolean isYesPressed) {
+                                            if (isYesPressed) {
+                                                clearClipboard();
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }, 1000);
+                    return;
+                }
+            }
+        }
+
         mWebView.loadUrl(baseUrl);
 
     }
