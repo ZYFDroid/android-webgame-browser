@@ -15,8 +15,8 @@ android {
         applicationId "com.example.majsoulwindows"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 2504
-        versionName "2.5.0.4"
+        versionCode 2505
+        versionName "2.5.0.5"
     }
     buildTypes {
         release {

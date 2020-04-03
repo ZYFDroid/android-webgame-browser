@@ -31,7 +31,7 @@ public class Utils {
 				action.run();
 			}
 		}).setNegativeButton(no,null).create();
-
+			if(!(ctx instanceof Activity))
 			ald.getWindow().setType(getFlagCompat());
 
 		ald.show();
@@ -39,7 +39,7 @@ public class Utils {
 
 	public static void showDialog(Context ctx, String msg){
 		AlertDialog ald =  new AlertDialog.Builder(ctx).setMessage(msg).setPositiveButton(uhh,null).create();
-
+		if(!(ctx instanceof Activity))
         ald.getWindow().setType(getFlagCompat());
 		ald.show();
 	}
@@ -63,6 +63,7 @@ public class Utils {
 				action.onResult(false);
 			}
 		}).setCancelable(false).create();
+		if(!(ctx instanceof Activity))
         ald.getWindow().setType(getFlagCompat());
 		ald.show();
 	}
@@ -85,7 +86,7 @@ public class Utils {
 
 		public void show(){
 			onCreate();
-
+			if(!(ctx instanceof Activity))
             adbd.getWindow().setType(getFlagCompat());
 			adbd.show();
 		}

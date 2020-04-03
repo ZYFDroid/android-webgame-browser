@@ -7,11 +7,18 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -130,10 +137,12 @@ public class FrmBrowser extends StandOutWindow {
 
     }
 
+
+    private int thisID = -1;
     @Override
     public void createAndAttachView(int id, FrameLayout frame) {
         baseUrl = getSharedPreferences("0",0).getString("url","https://www.majsoul.com/1/");
-
+        thisID = id;
         isRunning = true;
 
         this.mWebView = new WebView(this);
@@ -191,7 +200,6 @@ public class FrmBrowser extends StandOutWindow {
                 }
             }
         }
-
         mWebView.loadUrl(baseUrl);
     }
 

@@ -85,7 +85,8 @@ public class WebGameBoostEngine {
                             if (patch.exists() && !resUrl.endsWith("/code.js")) {
 
                                 try {
-                                    Log.e("USES_PATCH", resUrl + " -> " + urlToLocalPath(resUrl, getPatchDir()));
+                                    if(BuildConfig.DEBUG)
+                                        Log.v("USES_PATCH", resUrl + " -> " + urlToLocalPath(resUrl, getPatchDir()));
 
 
                                     return new WebResourceResponse(type, null, new FileInputStream(patch));
@@ -95,7 +96,8 @@ public class WebGameBoostEngine {
                             }
                             else if(cache.exists()){
                                 try {
-                                    Log.e("USES_CACHE", resUrl + " -> " + urlToLocalPath(resUrl, getBaseDir()));
+                                    if(BuildConfig.DEBUG)
+                                        Log.v("USES_CACHE", resUrl + " -> " + urlToLocalPath(resUrl, getBaseDir()));
 
                                     if(resUrl.endsWith("/code.js")){
                                         return new WebResourceResponse(type, null, getModedStream(new FileInputStream(cache)));
@@ -117,8 +119,8 @@ public class WebGameBoostEngine {
                                     InputStream cacheIs = downer.getParallelInputStream();
 
 
-
-                                    Log.e("MAKE_CACHE", source + " -> " + dest);
+                                    if(BuildConfig.DEBUG)
+                                        Log.v("MAKE_CACHE", source + " -> " + dest);
 
                                     if(resUrl.endsWith("/code.js")){
                                         return new WebResourceResponse(type, null, getModedStream(cacheIs));
@@ -139,7 +141,8 @@ public class WebGameBoostEngine {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                Log.e("DIRECTLOAD_NOCACHE", resUrl);
+                if(BuildConfig.DEBUG)
+                    Log.v("DIRECTLOAD_NOCACHE", resUrl);
                 return super.shouldInterceptRequest(view, request);
             }
 
@@ -158,7 +161,9 @@ public class WebGameBoostEngine {
                         try {
                             patches.add(crlfStream());
                             patches.add(new FileInputStream(p));
-                            Log.e("LOAD_MOD",p.getAbsolutePath());
+                            if(BuildConfig.DEBUG) {
+                                Log.v("LOAD_MOD", p.getAbsolutePath());
+                            }
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         }

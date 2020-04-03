@@ -2033,6 +2033,10 @@ public abstract class StandOutWindow extends Service {
 		}
 	}
 
+	public View getDecorateView(){
+		return getWindow(getUniqueId());
+	}
+
 	protected class DropDownListItem {
 		public int icon;
 		public String description;

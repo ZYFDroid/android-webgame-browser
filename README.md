@@ -16,11 +16,10 @@
 
 - 服务器切换功能
 
-- 插件功能（请勿滥用）
+- 插件功能（请勿滥用） 
 
 - 插件模板在项目仓库中有
 
-- 
-[点我下载](https://github.com/ZYFDroid/android-majsoul-windows/releases)
+- [点我下载](https://github.com/ZYFDroid/android-majsoul-windows/releases)
 
 - [日服中文插件，给看不懂日文分不清吃碰杠的人（比如我）使用的](https://github.com/ZYFDroid/android-majsoul-windows/releases/tag/2.5.0.1)
