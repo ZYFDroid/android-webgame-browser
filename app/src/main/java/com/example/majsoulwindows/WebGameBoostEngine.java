@@ -43,7 +43,7 @@ import wei.mark.standout.Utils;
 public class WebGameBoostEngine {
     public static void boost(final Context ctx,final WebView mWebView, final String baseUrl){
         final String cachepref  = ctx.getSharedPreferences("0",0).getString("tmp","zh");
-        if(null==hWnd)
+        if(null==hWnd){hWnd=new Handler();}
         mWebView.setKeepScreenOn(true);
         mWebView.setWebViewClient(new WebViewClient() {
             @Override

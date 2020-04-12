@@ -1,5 +1,7 @@
 # 雀魂麻将Majsoul Windows Ver~ 客户端
 
+交流群 QQ:[1039904710](https://jq.qq.com/?_wv=1027&k=59Oskpg) 欢迎来玩
+
 ###### 手机版请点击下方 View all of README.md展开全文
 
 - 窗口化打牌，最大化/最小化隐藏/自由调整大小，像Windows一样使用。(需要悬浮窗权限)
