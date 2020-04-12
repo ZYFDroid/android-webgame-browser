@@ -32,7 +32,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 import java.util.Vector;
-import java.util.logging.Handler;
+import android.os.Handler;
 
 import wei.mark.standout.Utils;
 
@@ -42,7 +42,7 @@ import wei.mark.standout.Utils;
 
 public class WebGameBoostEngine {
     public static void boost(final Context ctx,final WebView mWebView, final String baseUrl){
-        final String cachepref  = ctx.getSharedPreferences("0",0).getString("tmp","zh");
+        final String cachepref  = Utils.getSP(ctx).getString("tmp","zh");
         if(null==hWnd){hWnd=new Handler();}
         mWebView.setKeepScreenOn(true);
         mWebView.setWebViewClient(new WebViewClient() {

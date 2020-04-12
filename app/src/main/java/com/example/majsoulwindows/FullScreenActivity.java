@@ -37,15 +37,15 @@ public class FullScreenActivity extends Activity {
         isRunning = true;
         rootView = findViewById(R.id.rootView);
         FrameLayout frame = rootView;
-        baseUrl = getSharedPreferences("0",0).getString("url","https://www.majsoul.com/1/");
+        baseUrl = Utils.getSP(this).getString("url","https://www.majsoul.com/1/");
 
         if(null==mWebView) {
             this.mWebView = new WebView(this);
             WebGameBoostEngine.boost(this,mWebView,baseUrl);
         }
         frame.addView(mWebView);
-        renderW = getSharedPreferences("0",0).getInt("rw",854);
-        renderH = getSharedPreferences("0",0).getInt("rh",480);
+        renderW = Utils.getSP(this).getInt("rw",854);
+        renderH = Utils.getSP(this).getInt("rh",480);
         //this.mWebView.setWebViewClient(new baseUrl(this));
 
         hWnd.postDelayed(resizer,1000);

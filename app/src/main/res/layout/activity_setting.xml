@@ -60,6 +60,11 @@
 
                 android:text="变更窗口标题"
                 android:onClick="setwindowtitle"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="变更窗口边框样式"
+                android:onClick="setWindowStyle"/>
 
             <Button
                 android:layout_width="match_parent"

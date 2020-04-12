@@ -86,7 +86,7 @@ public class PluginActivity extends Activity {
             }
         }.start();
 
-        findViewById(R.id.btnPlugin).setEnabled(getSharedPreferences("0",0).getBoolean("accept_plugin",false));
+        findViewById(R.id.btnPlugin).setEnabled(Utils.getSP(this).getBoolean("accept_plugin",false));
     }
 
     List<AppInfo> apps = new ArrayList<>();
@@ -192,7 +192,7 @@ public class PluginActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 findViewById(R.id.btnPlugin).setEnabled(true);
-                getSharedPreferences("0",0).edit().putBoolean("accept_plugin",true).commit();
+                Utils.getSP(PluginActivity.this).edit().putBoolean("accept_plugin",true).commit();
             }
         }).setNegativeButton(android.R.string.cancel,null).create();
         ald.show();

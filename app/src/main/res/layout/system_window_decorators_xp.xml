@@ -4,31 +4,31 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
     android:layout_height="220dp"
-    android:background="@drawable/shadow">
+    android:background="@drawable/winxp">
 <RelativeLayout
     android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="1dp"
-    android:background="@drawable/bg_frame" >
+    android:padding="1dp" >
 
     <LinearLayout
         android:id="@+id/titlebar"
         android:layout_width="fill_parent"
-        android:layout_height="29dp"
+        android:layout_height="23dp"
         android:layout_alignParentTop="true"
-        android:background="#0fff"
+        android:background="#0000"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:layout_marginBottom="2dp"
         android:padding="0dp" >
 
         <ImageView
             android:id="@+id/window_icon"
-            android:layout_width="26dp"
+            android:layout_width="24dp"
             android:src="@drawable/ic"
             android:padding="5dp"
             android:paddingLeft="4dp"
-            android:layout_height="26dp"
+            android:layout_height="24dp"
             android:contentDescription="@string/window_icon" />
 
         <TextView
@@ -38,36 +38,41 @@
             android:layout_marginLeft="4dp"
             android:layout_weight="1"
             android:maxLines="1"
-            android:textColor="#000"
+            android:textColor="#fff"
             android:text="Title"
-            android:textSize="13sp"
+            android:textSize="12sp"
+            android:shadowColor="#fff"
+            android:shadowRadius="10"
             tools:ignore="HardcodedText" />
 
         <ImageView
             android:id="@+id/custom"
             android:layout_width="32dp"
-            android:layout_height="match_parent"
+            android:layout_height="32dp"
             android:background="@drawable/bg_btn_cmd"
             android:tint="#000"
             android:visibility="gone"
-            android:padding="3dp"
-            android:src="@drawable/ic_menu_capture" />
+            android:padding="6dp"
+            android:src="@drawable/ic_menu_capture"
+            android:contentDescription="@string/hide" />
 
         <ImageView
             android:id="@+id/hide"
-            android:layout_width="32dp"
-            android:layout_height="match_parent"
+            android:layout_width="25dp"
+            android:layout_height="24dp"
             android:background="@drawable/bg_btn_cmd"
             android:tint="#000"
-            android:padding="3dp"
+            android:alpha="0.01"
+            android:padding="5dp"
             android:src="@drawable/hide"
             android:contentDescription="@string/hide" />
 
         <ImageView
             android:id="@+id/maximize"
-            android:layout_width="32dp"
-            android:layout_height="match_parent"
-            android:padding="3dp"
+            android:layout_width="23dp"
+            android:layout_height="24dp"
+            android:padding="5dp"
+            android:alpha="0.01"
             android:background="@drawable/bg_btn_cmd"
             android:tint="#000"
             android:src="@drawable/maximize"
@@ -75,10 +80,11 @@
 
         <ImageView
             android:id="@+id/close"
-            android:layout_width="32dp"
+            android:layout_width="25dp"
             android:tint="#000"
-            android:layout_height="match_parent"
-            android:padding="3dp"
+            android:alpha="0.01"
+            android:layout_height="24dp"
+            android:padding="5dp"
             android:background="@drawable/bg_btn_close"
             android:src="@drawable/close"
             android:contentDescription="@string/close" />
@@ -92,6 +98,10 @@
         android:layout_below="@+id/titlebar" >
     </FrameLayout>
 
+
+
+</RelativeLayout>
+
     <ImageView
         android:id="@+id/corner"
         android:layout_width="wrap_content"
@@ -100,8 +110,7 @@
         android:layout_alignParentRight="true"
         android:translationX="5dp"
         android:translationY="5dp"
+        android:layout_gravity="right|bottom"
         android:contentDescription="@string/corner"
         android:src="@drawable/corner" />
-
-</RelativeLayout>
 </FrameLayout>

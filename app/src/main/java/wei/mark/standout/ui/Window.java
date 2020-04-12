@@ -362,6 +362,16 @@ public class Window extends FrameLayout {
 
 	public View btnCam;
 
+	private int getDecorationStyle(){
+		if(Utils.isSet(flags,StandOutFlags.FLAG_DECORATION_STYLE_WIN7)){
+			return R.layout.system_window_decorators_win7;
+		}
+		if(Utils.isSet(flags,StandOutFlags.FLAG_DECORATION_STYLE_WINXP)){
+			return R.layout.system_window_decorators_xp;
+		}
+		return R.layout.system_window_decorators;
+	}
+
 	/**
 	 * Returns the system window decorations if the implementation sets
 	 * .
@@ -374,7 +384,7 @@ public class Window extends FrameLayout {
 	 */
 	private View getSystemDecorations() {
 		final View decorations = mLayoutInflater.inflate(
-				R.layout.system_window_decorators, null);
+				getDecorationStyle(), null);
 
 		// icon
 		final ImageView icon = (ImageView) decorations

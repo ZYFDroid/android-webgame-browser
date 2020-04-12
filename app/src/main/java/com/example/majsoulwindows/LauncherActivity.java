@@ -73,8 +73,8 @@ public class LauncherActivity extends Activity {
     }
 
     public void startService(){
-        if(getSharedPreferences("0",0).getBoolean("clear",false)) {
-            getSharedPreferences("0", 0).edit()
+        if(Utils.getSP(this).getBoolean("clear",false)) {
+            Utils.getSP(this).edit()
                     .remove("wx")
                     .remove("wy")
                     .remove("ww")

@@ -44,44 +44,23 @@ public class WindowService extends Service
     @SuppressWarnings("WrongConstant")
     private void createToucher()
     {
-        //赋值WindowManager&LayoutParam.
         params = new WindowManager.LayoutParams();
         windowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
-        //设置type.系统提示型窗口，一般都在应用程序窗口之上.
-         params.type = Utils.getFlagCompat();
-        //设置效果为背景透明.
+        params.type = Utils.getFlagCompat();
         params.format = PixelFormat.RGBA_8888;
-        //设置flags.不可聚焦及不可使用按钮对悬浮窗进行操控.
-        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
-
-        //设置窗口初始停靠位置.
+        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         params.gravity = Gravity.LEFT | Gravity.TOP;
-        params.x = getSharedPreferences("0",0).getInt("bx",0);
-        params.y = getSharedPreferences("0",0).getInt("by",0);
+        params.x = Utils.getSP(this).getInt("bx",0);
+        params.y = Utils.getSP(this).getInt("by",0);
         blx = params.x;
         bly = params.y;
-        //设置悬浮窗口长宽数据.
-        //注意，这里的width和height均使用px而非dp.这里我偷了个懒
-        //如果你想完全对应布局设置，需要先获取到机器的dpi
-        //px与dp的换算为px = dp * (dpi / 160).
         params.width = dip2px(this,36);
         params.height = dip2px(this,36);
 
         LayoutInflater inflater = LayoutInflater.from(getApplication());
-        //获取浮动窗口视图所在布局.
         toucherLayout = (LinearLayout) inflater.inflate(R.layout.fwd,null);
-        //添加toucherlayout
         windowManager.addView(toucherLayout,params);
-
-        Log.i(TAG,"toucherlayout-->left:" + toucherLayout.getLeft());
-        Log.i(TAG,"toucherlayout-->right:" + toucherLayout.getRight());
-        Log.i(TAG,"toucherlayout-->top:" + toucherLayout.getTop());
-        Log.i(TAG,"toucherlayout-->bottom:" + toucherLayout.getBottom());
-
-        //主动计算出当前View的宽高信息.
         toucherLayout.measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
-
-        //用于检测状态栏高度.
         int resourceId = getResources().getIdentifier("status_bar_height","dimen","android");
         if (resourceId > 0)
         {
@@ -120,17 +99,12 @@ public class WindowService extends Service
                 }
 
                 if(event.getAction() == MotionEvent.ACTION_UP){
-                    if(isDragged){
-                        Log.i(TAG,"拖动了");
-                    }
-                    else{
-                        Log.i(TAG,"点击了");
+                    if(!isDragged){
                         FrmBrowser.isAnimShow = true;
 
                         StandOutWindow.show(getApplicationContext(), FrmBrowser.class, StandOutWindow.DEFAULT_ID);
 
-                        getSharedPreferences("0",0).edit().putInt("bx",blx).commit();
-                        getSharedPreferences("0",0).edit().putInt("by",bly).commit();
+                        Utils.getSP(WindowService.this).edit().putInt("bx",blx).putInt("by",bly).commit();
 
                         stopSelf();
                     }
@@ -150,7 +124,6 @@ public class WindowService extends Service
     @Override
     public void onDestroy()
     {
-        //用imageButton检查悬浮窗还在不在，这里可以不要。优化悬浮窗时要用到。
         if (imageButton1 != null)
         {
             windowManager.removeView(toucherLayout);

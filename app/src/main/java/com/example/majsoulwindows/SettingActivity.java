@@ -87,7 +87,7 @@ public class SettingActivity extends Activity {
 
     void clearandreset(){
 
-        getSharedPreferences("0",0).edit().putBoolean("clear",true).commit();
+        Utils.getSP(SettingActivity.this).edit().putBoolean("clear",true).commit();
 
         try{
 
@@ -141,8 +141,7 @@ public class SettingActivity extends Activity {
                 String resstr = str.split("\\s")[0];
                 String[] resp = resstr.split("x");
 
-                getSharedPreferences("0",0).edit().putInt("rw",Integer.parseInt(resp[0])).commit();
-                getSharedPreferences("0",0).edit().putInt("rh",Integer.parseInt(resp[1])).commit();
+                Utils.getSP(SettingActivity.this).edit().putInt("rw",Integer.parseInt(resp[0])).putInt("rh",Integer.parseInt(resp[1])).commit();
 
                 Toast.makeText(SettingActivity.this, "已设置"+resstr, Toast.LENGTH_SHORT).show();
             }
@@ -166,12 +165,23 @@ public class SettingActivity extends Activity {
         new AlertDialog.Builder(this).setTitle("选择服务器").setItems(servername, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                getSharedPreferences("0",0).edit().putString("url",serverUrl[i]).commit();
-                getSharedPreferences("0",0).edit().putString("tmp",cachepath[i]).commit();
+                Utils.getSP(SettingActivity.this).edit().putString("url",serverUrl[i]).putString("tmp",cachepath[i]).commit();
                 Toast.makeText(SettingActivity.this, "已设置"+servername[i], Toast.LENGTH_SHORT).show();
             }
         }).create().show();
 
+    }
+
+    public static String[] windowStyle={"默认","Win7","WindowsXP"};
+
+    public void setWindowStyle(View view) {
+        new AlertDialog.Builder(this).setTitle("选择窗口边框样式").setItems(windowStyle, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Utils.getSP(SettingActivity.this).edit().putString("borderstyle",windowStyle[i]).commit();
+                Toast.makeText(SettingActivity.this, "已设置边框样式："+windowStyle[i], Toast.LENGTH_SHORT).show();
+            }
+        }).create().show();
     }
 
     public void loadPlugin(View view) {
@@ -184,11 +194,11 @@ public class SettingActivity extends Activity {
     }
 
     public void setwindowtitle(View view) {
-        new Utils.EditDialog(this,"请输入窗口标题",getSharedPreferences("0",0).getString("wndtext","雀魂麻将majsoul - Windows Ver~")){
+        new Utils.EditDialog(this,"请输入窗口标题",Utils.getSP(SettingActivity.this).getString("wndtext","雀魂麻将majsoul - Windows Ver~")){
 
             @Override
             public void onConfirmText(String text) {
-                getSharedPreferences("0",0).edit().putString("wndtext",text).commit();
+                Utils.getSP(SettingActivity.this).edit().putString("wndtext",text).commit();
                 Toast.makeText(SettingActivity.this, "变更成功。下次生效", Toast.LENGTH_SHORT).show();
             }
         }.show();

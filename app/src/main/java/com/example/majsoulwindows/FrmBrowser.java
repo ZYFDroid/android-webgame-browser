@@ -89,7 +89,7 @@ public class FrmBrowser extends StandOutWindow {
 
     @Override
     public String getAppName() {
-        return getSharedPreferences("0",0).getString("wndtext","雀魂麻将majsoul - Windows Ver~");
+        return Utils.getSP(this).getString("wndtext","雀魂麻将majsoul - Windows Ver~");
     }
 
     @Override
@@ -141,7 +141,7 @@ public class FrmBrowser extends StandOutWindow {
     private int thisID = -1;
     @Override
     public void createAndAttachView(int id, FrameLayout frame) {
-        baseUrl = getSharedPreferences("0",0).getString("url","https://www.majsoul.com/1/");
+        baseUrl = Utils.getSP(this).getString("url","https://www.majsoul.com/1/");
         thisID = id;
         isRunning = true;
 
@@ -150,8 +150,8 @@ public class FrmBrowser extends StandOutWindow {
         mWebView.addJavascriptInterface(new SelectionCallback(),"CopyInterfaceCallback");
 
         frame.addView(mWebView);
-        renderW = getSharedPreferences("0",0).getInt("rw",854);
-        renderH = getSharedPreferences("0",0).getInt("rh",480);
+        renderW = Utils.getSP(this).getInt("rw",854);
+        renderH = Utils.getSP(this).getInt("rh",480);
 
         WebGameBoostEngine.boost(this,mWebView,baseUrl);
 
@@ -325,8 +325,8 @@ public class FrmBrowser extends StandOutWindow {
             StandOutLayoutParams orignal = getWindow(id).getLayoutParams();
             int sourceX = orignal.x + orignal.width /2;
             int sourceY = orignal.y + orignal.height /2;
-            int destX = getSharedPreferences("0", 0).getInt("bx", 0) + dip2px(this,18);
-            int destY = getSharedPreferences("0", 0).getInt("by", 0) + dip2px(this,18);
+            int destX = Utils.getSP(this).getInt("bx", 0) + dip2px(this,18);
+            int destY = Utils.getSP(this).getInt("by", 0) + dip2px(this,18);
 
             float xscale = (float)dip2px(this,36) / (float)orignal.width;
             float yscale = (float)dip2px(this,36) / (float)orignal.height;
@@ -376,8 +376,8 @@ public class FrmBrowser extends StandOutWindow {
             StandOutLayoutParams orignal = getWindow(id).getLayoutParams();
             int sourceX = orignal.x + orignal.width /2;
             int sourceY = orignal.y + orignal.height /2;
-            int destX = getSharedPreferences("0", 0).getInt("bx", 0) + dip2px(this,18);
-            int destY = getSharedPreferences("0", 0).getInt("by", 0) + dip2px(this,18);
+            int destX = Utils.getSP(this).getInt("bx", 0) + dip2px(this,18);
+            int destY = Utils.getSP(this).getInt("by", 0) + dip2px(this,18);
 
             float xscale = (float)dip2px(this,36) / (float)orignal.width;
             float yscale = (float)dip2px(this,36) / (float)orignal.height;
@@ -424,10 +424,10 @@ public class FrmBrowser extends StandOutWindow {
 
         StandOutLayoutParams lp = window.getLayoutParams();
 
-        lp.x = getSharedPreferences("0",0).getInt("wx",100);
-        lp.y = getSharedPreferences("0",0).getInt("wy",100);
-        lp.width = getSharedPreferences("0",0).getInt("ww",dip2px(this,240));
-        lp.height = getSharedPreferences("0",0).getInt("wh",dip2px(this,200));
+        lp.x = Utils.getSP(this).getInt("wx",100);
+        lp.y = Utils.getSP(this).getInt("wy",100);
+        lp.width = Utils.getSP(this).getInt("ww",dip2px(this,240));
+        lp.height = Utils.getSP(this).getInt("wh",dip2px(this,200));
 
 
         window.setLayoutParams(lp);
@@ -442,19 +442,19 @@ public class FrmBrowser extends StandOutWindow {
     @Override
     public boolean onHide(int id, Window window) {
         startService(new Intent(getApplicationContext(),WindowService.class));
-        getSharedPreferences("0",0).edit().putInt("wx",window.getLayoutParams().x).commit();
-        getSharedPreferences("0",0).edit().putInt("wy",window.getLayoutParams().y).commit();
-        getSharedPreferences("0",0).edit().putInt("ww",window.getLayoutParams().width).commit();
-        getSharedPreferences("0",0).edit().putInt("wh",window.getLayoutParams().height).commit();
+        Utils.getSP(this).edit().putInt("wx",window.getLayoutParams().x)
+                .putInt("wy",window.getLayoutParams().y)
+                .putInt("ww",window.getLayoutParams().width)
+                .putInt("wh",window.getLayoutParams().height).commit();
         isAnimHide = true;
         return super.onHide(id, window);
     }
     @Override
     public boolean onClose(int id, Window window) {
-        getSharedPreferences("0",0).edit().putInt("wx",window.getLayoutParams().x).commit();
-        getSharedPreferences("0",0).edit().putInt("wy",window.getLayoutParams().y).commit();
-        getSharedPreferences("0",0).edit().putInt("ww",window.getLayoutParams().width).commit();
-        getSharedPreferences("0",0).edit().putInt("wh",window.getLayoutParams().height).commit();
+        Utils.getSP(this).edit().putInt("wx",window.getLayoutParams().x)
+                .putInt("wy",window.getLayoutParams().y)
+                .putInt("ww",window.getLayoutParams().width)
+                .putInt("wh",window.getLayoutParams().height).commit();
         mWebView.destroy();
         isRunning = false;
         return super.onClose(id, window);
@@ -521,10 +521,17 @@ public class FrmBrowser extends StandOutWindow {
     }
 
     public int getFlags(int id) {
-        return super.getFlags(id)
+        int flat = super.getFlags(id)
                 |StandOutFlags.FLAG_WINDOW_HIDE_ENABLE
                 |StandOutFlags.FLAG_BODY_MOVE_ENABLE
                 |StandOutFlags.FLAG_DECORATION_SYSTEM;
+        if(Utils.getSP(this).getString("borderstyle","默认").equals("Win7")){
+            flat |= StandOutFlags.FLAG_DECORATION_STYLE_WIN7;
+        }
+        if(Utils.getSP(this).getString("borderstyle","默认").equals("WindowsXP")){
+            flat |= StandOutFlags.FLAG_DECORATION_STYLE_WINXP;
+        }
+        return flat;
     }
 
     @Override

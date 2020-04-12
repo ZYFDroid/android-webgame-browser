@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
@@ -144,14 +145,18 @@ public class Utils {
 		public abstract void onConfirmText(String text);
 	}
 
+	public static SharedPreferences getSP(Context ctx){
+		return ctx.getSharedPreferences("0",0);
+	}
+
 	public static void showDialogVersion(Context ctx,String key,int version,String message){
-		if(ctx.getSharedPreferences("0",0).getInt(key,-1) < version){
+		if(getSP(ctx).getInt(key,-1) < version){
 			Utils.showDialog(ctx,message);
 		}
 	}
 
 	public static void setDialogVersion(Context ctx,String key,int version){
-		ctx.getSharedPreferences("0",0).edit().putInt(key,version).commit();
+		getSP(ctx).edit().putInt(key,version).commit();
 	}
 
 }

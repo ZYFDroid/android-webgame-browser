@@ -13,7 +13,7 @@ import android.view.View;
  * 
  */
 public class StandOutFlags {
-	// This counter keeps track of which primary bit to set for each flag
+    // This counter keeps track of which primary bit to set for each flag
 	private static int flag_bit = 0;
 
 	/**
@@ -169,7 +169,7 @@ public class StandOutFlags {
 	 * @see {@link Window#onFocus(boolean)}
 	 * 
 	 */
-	public static final int FLAG_WINDOW_FOCUS_INDICATOR_DISABLE = 1 << flag_bit++;
+	//public static final int FLAG_WINDOW_FOCUS_INDICATOR_DISABLE = 1 << flag_bit++;
 
 	/**
 	 * Setting this flag indicates that the system should disable all
@@ -215,4 +215,8 @@ public class StandOutFlags {
 	 * @see {@link Window#addFunctionality(View, int)}
 	 */
 	public static final int FLAG_ADD_FUNCTIONALITY_DROP_DOWN_DISABLE = 1 << flag_bit++;
+
+
+	public static final int FLAG_DECORATION_STYLE_WIN7 = 1 << flag_bit++;
+	public static final int FLAG_DECORATION_STYLE_WINXP = 1 << flag_bit++;
 }
