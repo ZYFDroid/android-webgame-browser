@@ -307,25 +307,7 @@ public class Window extends FrameLayout {
 				return false;
 			}
 
-			if (!Utils.isSet(flags,
-					StandOutFlags.FLAG_WINDOW_FOCUS_INDICATOR_DISABLE)) {
-				// change visual state
-				View content = findViewById(R.id.content);
-				if (focus) {
-					// gaining focus
-					content.setBackgroundResource(R.drawable.border_focused);
-				} else {
-					// losing focus
-					if (Utils
-							.isSet(flags, StandOutFlags.FLAG_DECORATION_SYSTEM)) {
-						// system decorations
-						content.setBackgroundResource(R.drawable.border);
-					} else {
-						// no decorations
-						content.setBackgroundResource(0);
-					}
-				}
-			}
+
 
 			// set window manager params
 			StandOutLayoutParams params = getLayoutParams();
