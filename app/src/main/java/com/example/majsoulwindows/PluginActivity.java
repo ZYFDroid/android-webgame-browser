@@ -180,15 +180,15 @@ public class PluginActivity extends Activity {
                 "\n" +
                 "第一次使用，每次安装或卸载插件时都需要 载入插件一次\n" +
                 "\n" +
-                "注意：\n" +
-                "由于插件的特殊性质，请勿使用任何影响游戏平衡性，解锁付费装扮等性质的插件，否则会导致账号被封等后果\n" +
+                "警告：\n" +
+                "由于插件的特殊性质，禁止开发，制作，分发，出售，购买，使用任何影响游戏平衡性，解锁付费装扮等性质的插件，否则可能会导致账号被封等后果，或者被追究法律责任。\n" +
+                "解锁插件功能，即表示您已阅读并知晓以上内容，并愿意承担滥用插件功能造成的后果。\n"+
                 "推荐使用 “支付宝” 来解锁付费装扮\n" +
-                "使用任何影响游戏平衡性，解锁付费装扮等性质的插件的统统给\uD83D\uDC74爬\n" +
                 "\n" +
                 "推荐插件：最近大铳\n" +
                 "\n" +
                 "参考项目：MajsoulPlus";
-        AlertDialog ald =  new AlertDialog.Builder(this).setTitle("功能介绍").setMessage(msg).setPositiveButton("我已阅读并知晓以上内容", new DialogInterface.OnClickListener() {
+        AlertDialog ald =  new AlertDialog.Builder(this).setTitle("功能介绍").setMessage(msg).setPositiveButton("解锁插件功能", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 findViewById(R.id.btnPlugin).setEnabled(true);
