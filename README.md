@@ -18,7 +18,7 @@
 
 - 插件模板在项目仓库中有
 
-- [点我下载](https://github.com/ZYFDroid/android-majsoul-windows/releases)
+- [点我下载](https://github.com/ZYFDroid/android-webgame-browser/releases)
 
 ### 更改asset里的gamelist.json即可更改游戏列表
 
