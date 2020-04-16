@@ -1,7 +1,9 @@
-package com.example.majsoulwindows;
+package com.example.gamebrowser;
 
 import android.annotation.TargetApi;
+import android.app.Application;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Build;
 import android.util.Log;
@@ -16,6 +18,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -41,8 +45,18 @@ import wei.mark.standout.Utils;
  */
 
 public class WebGameBoostEngine {
+
+
     public static void boost(final Context ctx,final WebView mWebView, final String baseUrl){
-        final String cachepref  = Utils.getSP(ctx).getString("tmp","zh");
+        final String cachepref  = Utils.getSP(ctx).getString("tmp","def");
+        String urlRoot = baseUrl;
+        if(baseUrl.lastIndexOf(".",baseUrl.length())>0){
+            if(baseUrl.lastIndexOf(".") > baseUrl.lastIndexOf("/")){
+                int slashindex =baseUrl.lastIndexOf("/");
+                urlRoot = baseUrl.substring(0,slashindex+1);
+            }
+        }
+        final String baseUrlRoot=urlRoot;
         if(null==hWnd){hWnd=new Handler();}
         mWebView.setKeepScreenOn(true);
         mWebView.setWebViewClient(new WebViewClient() {
@@ -63,7 +77,7 @@ public class WebGameBoostEngine {
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 String resUrl = request.getUrl().toString();
                 if (resUrl.equals(baseUrl)) {
-                    resUrl += "<INDEX>";
+                    return super.shouldInterceptRequest(view,request);
                 }
                 try {
 
@@ -73,8 +87,6 @@ public class WebGameBoostEngine {
                             File cache = new File(urlToLocalPath(resUrl, getBaseDir()));
                             File patch = new File(urlToLocalPath(resUrl,getPatchDir()));
 
-
-
                             String type = "*.*";
                             if (mimt.hasExtension(MimeTypeMap.getFileExtensionFromUrl(resUrl))) {
                                 type = mimt.getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(resUrl));
@@ -82,7 +94,7 @@ public class WebGameBoostEngine {
                             if (resUrl.endsWith("/")) {
                                 type = "text/html";
                             }
-                            if (patch.exists() && !resUrl.endsWith("/code.js")) {
+                            if (patch.exists()) {
 
                                 try {
                                     if(BuildConfig.DEBUG)
@@ -98,11 +110,6 @@ public class WebGameBoostEngine {
                                 try {
                                     if(BuildConfig.DEBUG)
                                         Log.v("USES_CACHE", resUrl + " -> " + urlToLocalPath(resUrl, getBaseDir()));
-
-                                    if(resUrl.endsWith("/code.js")){
-                                        return new WebResourceResponse(type, null, getModedStream(new FileInputStream(cache)));
-                                    }
-
                                     return new WebResourceResponse(type, null, new FileInputStream(cache));
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
@@ -111,7 +118,7 @@ public class WebGameBoostEngine {
                             else {
                                 try {
 
-                                    String source = resUrl.replace("<INDEX>", "");
+                                    String source = resUrl;
                                     String dest = cache.getAbsolutePath();
 
                                     AsyncWebDownloader downer = new AsyncWebDownloader(request,source,dest);
@@ -122,9 +129,7 @@ public class WebGameBoostEngine {
                                     if(BuildConfig.DEBUG)
                                         Log.v("MAKE_CACHE", source + " -> " + dest);
 
-                                    if(resUrl.endsWith("/code.js")){
-                                        return new WebResourceResponse(type, null, getModedStream(cacheIs));
-                                    }
+
                                     return new WebResourceResponse(type, null, cacheIs);
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -146,11 +151,14 @@ public class WebGameBoostEngine {
                 return super.shouldInterceptRequest(view, request);
             }
 
-            public InputStream getModedStream(InputStream orignal){
-                Vector<InputStream> patches = new Vector<InputStream>();
-                patches.add(orignal);
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed();
+            }
 
-
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
                 File patchList = new File(getModDir());
                 if(!patchList.exists()){
                     patchList.mkdirs();
@@ -159,27 +167,24 @@ public class WebGameBoostEngine {
                         patchList.listFiles()) {
                     if(p.getName().endsWith(".js")){
                         try {
-                            patches.add(crlfStream());
-                            patches.add(new FileInputStream(p));
+                            BufferedReader reader = new BufferedReader(new InputStreamReader((new FileInputStream(p))));
+                            String line = "";
+                            StringBuilder out = new StringBuilder();
+                            while ((line=reader.readLine())!=null){
+                                out.append(line).append("\n");
+                            }
+                            reader.close();
+
                             if(BuildConfig.DEBUG) {
                                 Log.v("LOAD_MOD", p.getAbsolutePath());
                             }
-                        } catch (FileNotFoundException e) {
+
+                            view.evaluateJavascript(out.toString(),null);
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                 }
-                return new SequenceInputStream(patches.elements());
-            }
-
-            InputStream crlfStream(){
-                return new ByteArrayInputStream("\r\n\r\n\r\n".getBytes());
-            }
-
-
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
             }
 
             @TargetApi(27)
@@ -196,13 +201,18 @@ public class WebGameBoostEngine {
                     return false;
                 }
 
-                if(url.endsWith("<INDEX>")){return false;}
+                if(url.equals(baseUrl)){return false;}
+
+                if(url.endsWith(".html")){return false;}
+                if(url.endsWith(".htm")){return false;}
+                if(url.endsWith(".aspx")){return false;}
+                if(url.endsWith(".asp")){return false;}
+                if(url.endsWith(".php")){return false;}
+                if(url.endsWith(".jsp")){return false;}
+                if(url.endsWith(".action")){return false;}
+                if(url.endsWith(".do")){return false;}
 
                 String path = url.replace(baseUrl, "");
-
-                //if(path.endsWith("json") && !path.contains("/")){
-                //    return false;
-                //}
 
                 return true;
             }
@@ -215,11 +225,11 @@ public class WebGameBoostEngine {
                     }catch (Exception ex){}
                 }
 
-                return url.replace(baseUrl, baseDir);
+                return url.replace(baseUrlRoot, baseDir);
             }
 
             String getBaseDir() {
-                String path = ctx.getExternalFilesDir(null).getAbsolutePath();
+                String path = ctx.getFilesDir().getAbsolutePath();
                 if (!path.endsWith("/")) {
                     path += "/";
                 }
@@ -227,14 +237,14 @@ public class WebGameBoostEngine {
             }
 
             String getPatchDir() {
-                String path = ctx.getExternalFilesDir(null).getAbsolutePath();
+                String path = ctx.getFilesDir().getAbsolutePath();
                 if (!path.endsWith("/")) {
                     path += "/";
                 }
                 return path +cachepref+ "/patch/";
             }
             String getModDir() {
-                String path = ctx.getExternalFilesDir(null).getAbsolutePath();
+                String path = ctx.getFilesDir().getAbsolutePath();
                 if (!path.endsWith("/")) {
                     path += "/";
                 }
@@ -243,14 +253,19 @@ public class WebGameBoostEngine {
         });
         mWebView.setWebChromeClient(new WebChromeClient() {
             @Override
-            public boolean onJsAlert(WebView view, String url, final String message, JsResult result) {
+            public boolean onJsAlert(WebView view, String url, final String message,final JsResult result) {
                 hWnd.post(new Runnable() {
                     @Override
                     public void run() {
-                        Utils.showDialog(ctx, message);
+                        Utils.JsAlert(ctx, message, new Runnable() {
+                            @Override
+                            public void run() {
+                                result.confirm();
+                            }
+                        });
                     }
                 });
-                return super.onJsAlert(view, url, message, result);
+                return true;
             }
         });
         WebSettings settings = mWebView.getSettings();
@@ -263,8 +278,9 @@ public class WebGameBoostEngine {
         settings.setDatabaseEnabled(true);
         settings.setAllowFileAccess(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
-        //mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        //this.mWebView.setWebContentsDebuggingEnabled(true);
+        String ua = settings.getUserAgentString();
+        settings.setUserAgentString(ua+" AndroidGameBrowser/1.0 (Windowed or Fullscreen Immerse browser)");
+
     }
     private static android.os.Handler hWnd;
 }

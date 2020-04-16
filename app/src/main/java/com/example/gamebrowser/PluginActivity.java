@@ -1,15 +1,13 @@
-package com.example.majsoulwindows;
+package com.example.gamebrowser;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,21 +15,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,7 +56,7 @@ public class PluginActivity extends Activity {
             @Override
             public void run() {
                 Intent intent = new Intent(Intent.ACTION_MAIN,null);
-                intent.addCategory("com.example.majsoulwindows.ADDONS");
+                intent.addCategory("com.example.gamebrowser.ADDONS");
                 List<ResolveInfo> mApps = getPackageManager().queryIntentActivities(intent, 0);
                 apps.clear();
                 for (ResolveInfo info : mApps) {
@@ -63,8 +64,8 @@ public class PluginActivity extends Activity {
                         PackageInfo pifo = getPackageManager().getPackageInfo(info.activityInfo.packageName,0);
                         String path = pifo.applicationInfo.sourceDir;
                         String version = pifo.versionName;
-                        String desc = info.activityInfo.metaData.getString("mswin-addons-desc","无描述");
-                        String author = info.activityInfo.metaData.getString("mswin-addons-author","未知");
+                        String desc = info.activityInfo.metaData.getString("gb-addons-desc","无描述");
+                        String author = info.activityInfo.metaData.getString("gb-addons-author","未知");
                         apps.add(new AppInfo(info.activityInfo.loadIcon(getPackageManager()),info.activityInfo.loadLabel(getPackageManager()).toString(),path,desc,version,author));
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
@@ -181,13 +182,11 @@ public class PluginActivity extends Activity {
                 "第一次使用，每次安装或卸载插件时都需要 载入插件一次\n" +
                 "\n" +
                 "注意：\n" +
-                "由于插件的特殊性质，禁止开发，制作，分发，出售，购买，使用任何影响游戏平衡性，解锁付费装扮等性质的插件，否则可能会导致账号被封等后果，或者被追究法律责任。\n" +
-                "解锁插件功能，即表示您已阅读并知晓以上内容，并愿意承担滥用插件功能造成的一切后果。\n"+
-                "推荐使用 “支付宝” 来解锁付费装扮\n" +
-                "\n" +
-                "推荐插件：最近大铳\n" +
-                "\n" +
-                "参考项目：MajsoulPlus";
+                "由于插件的特殊性质，禁止滥用插件功能，包括但不限于开发，制作，分发，出售，购买，使用任何影响游戏平衡性，解锁付费内容等性质的插件，否则可能会导致账号被封，或者被追究法律责任。\n" +
+                "解锁插件功能，即表示您已阅读并知晓以上内容，并愿意承担滥用插件功能造成的一切后果。\n" +
+                "\n\n" +
+                "警告：\n" +
+                "请从信任的地方获取插件。一些木马程序可能会伪装成插件，请自行甄别。";
         AlertDialog ald =  new AlertDialog.Builder(this).setTitle("功能介绍").setMessage(msg).setPositiveButton("解锁插件功能", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -223,11 +222,13 @@ public class PluginActivity extends Activity {
             protected String doInBackground(List<AppInfo>... params) {
                 StringBuilder result = new StringBuilder("插件加载：\r\n");
                 publishProgress("正在清理插件缓存...");
-                for (String server :
-                        SettingActivity.cachepath) {
+
+
+                for (SettingActivity.GameEntry server :
+                        SettingActivity.getGameList(PluginActivity.this)) {
                     try {
-                        cleanDir(getPatchDir(server));
-                        cleanDir(getModDir(server));
+                        cleanDir(getPatchDir(server.uuid));
+                        cleanDir(getModDir(server.uuid));
                     }catch (Exception ex){
                         return "插件缓存清理失败";
                     }
@@ -248,7 +249,7 @@ public class PluginActivity extends Activity {
                         for (int i = 0; i < jarr.length(); i++) {
                             JSONObject jobj = jarr.getJSONObject(i);
                             String sourceFile = jobj.getString("file");
-                            String targetserver = jobj.getString("server");
+                            String targetserver = jobj.getString("gameuid");
                             String filetype = jobj.getString("type");
                             String destPath = jobj.getString("path");
                             Log.w("Plugin Install","Extract:"+destPath);
@@ -284,14 +285,14 @@ public class PluginActivity extends Activity {
     }
 
     String getPatchDir(String cachepref) {
-        String path = getExternalFilesDir(null).getAbsolutePath();
+        String path = getFilesDir().getAbsolutePath();
         if (!path.endsWith("/")) {
             path += "/";
         }
         return path +cachepref+ "/patch/";
     }
     String getModDir(String cachepref) {
-        String path = getExternalFilesDir(null).getAbsolutePath();
+        String path = getFilesDir().getAbsolutePath();
         if (!path.endsWith("/")) {
             path += "/";
         }
@@ -299,12 +300,13 @@ public class PluginActivity extends Activity {
     }
 
     String getAddonRootDir(String cachepref,String type) {
-        String path = getExternalFilesDir(null).getAbsolutePath();
+        String path = getFilesDir().getAbsolutePath();
         if (!path.endsWith("/")) {
             path += "/";
         }
         return path +cachepref+ "/"+type+"/";
     }
+
     public static void cleanDir(String dirPath){
         File file = new File(dirPath);
         if(!file.exists()){file.mkdirs();}
@@ -316,6 +318,7 @@ public class PluginActivity extends Activity {
             }
         }
     }
+
     public static void deleteDir(String dirPath)
     {
         Log.w("Plugin Cleanup","Delete: "+dirPath);

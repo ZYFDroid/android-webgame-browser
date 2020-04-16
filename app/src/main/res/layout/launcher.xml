@@ -6,13 +6,15 @@
     android:onClick="close"
     android:layout_height="match_parent">
 <FrameLayout
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_marginLeft="50dp"
+    android:layout_marginRight="50dp"
     android:layout_height="wrap_content"
     android:background="@drawable/shadow">
 
     <LinearLayout
 
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_frame"
         android:clickable="true"
@@ -23,7 +25,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#000"
-            android:text="雀魂 窗口化 Majsoul Windows Ver 客户端"/>
+            android:layout_gravity="center"
+            android:text="电竞浏览器"/>
 
         <Button
             android:layout_width="match_parent"
@@ -41,18 +44,16 @@
             android:text="申请存储权限"
             android:onClick="storage"/>
 
-
-
         <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="窗口化启动"
+        android:text="启动浏览器窗口"
         android:onClick="start"/>
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="全屏启动"
+            android:text="启动全屏沉浸式浏览器"
             android:onClick="startfull"/>
 
         <Button

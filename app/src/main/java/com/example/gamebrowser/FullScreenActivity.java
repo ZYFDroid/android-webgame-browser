@@ -1,4 +1,4 @@
-package com.example.majsoulwindows;
+package com.example.gamebrowser;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,7 +25,7 @@ import wei.mark.standout.Utils;
 
 public class FullScreenActivity extends Activity {
     public HashMap<String,String> clipboardFinder = new HashMap<>();
-    public static String baseUrl = "https://www.majsoul.com/1/";
+    public static String baseUrl = SettingActivity.defaultPage;
 
     public static boolean isRunning = false;
 
@@ -37,7 +37,7 @@ public class FullScreenActivity extends Activity {
         isRunning = true;
         rootView = findViewById(R.id.rootView);
         FrameLayout frame = rootView;
-        baseUrl = Utils.getSP(this).getString("url","https://www.majsoul.com/1/");
+        baseUrl = Utils.getSP(this).getString("url",SettingActivity.defaultPage);
 
         if(null==mWebView) {
             this.mWebView = new WebView(this);
@@ -58,53 +58,12 @@ public class FullScreenActivity extends Activity {
         rootView = frame;
 
 
-        if (Build.VERSION.SDK_INT <= 28) {
-            loadClipboardMap();
-            String clipboardData = paste(this);
-            for (String key : clipboardFinder.keySet()) {
-                if (clipboardData.contains(key)) {
-                    final String targetUrl = findFirstUrl(clipboardData);
-                    final String what = key;
-                    hWnd.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Utils.Prompt(FullScreenActivity.this, "您复制了一个 " + clipboardFinder.get(what) + "，打开它吗？", new Utils.OnPromptResult() {
-                                @Override
-                                public void onResult(boolean isYesPressed) {
-                                    if (isYesPressed) {
-                                        mWebView.loadUrl(targetUrl);
-                                    } else {
-                                        mWebView.loadUrl(baseUrl);
-
-                                    }
-
-                                    Utils.Prompt(FullScreenActivity.this, "是否删除剪切板中的链接？", new Utils.OnPromptResult() {
-                                        @Override
-                                        public void onResult(boolean isYesPressed) {
-                                            if (isYesPressed) {
-                                                clearClipboard();
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    }, 1000);
-                    return;
-                }
-            }
-        }
 
         mWebView.loadUrl(baseUrl);
 
     }
 
     int renderW=854,renderH=480;
-
-    public void loadClipboardMap(){
-        clipboardFinder.put(baseUrl+"?room=","好友房链接");
-        clipboardFinder.put(baseUrl+"?paipu=","牌谱链接");
-    }
 
 
     Runnable resizer = new Runnable() {
@@ -121,17 +80,6 @@ public class FullScreenActivity extends Activity {
         }
     };
 
-    public void clearClipboard(){
-        ClipboardManager manager = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
-        if (manager != null) {
-            try {
-                manager.setPrimaryClip(manager.getPrimaryClip());
-                manager.setPrimaryClip(ClipData.newPlainText(null, ""));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     FrameLayout rootView;
     void scaleView(){
@@ -174,31 +122,7 @@ public class FullScreenActivity extends Activity {
     }
 
 
-    public static String paste(Context context) {
-        try {
-            ClipboardManager cmb = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-            if(cmb.getPrimaryClip().getItemCount() > 0)
-                return cmb.getPrimaryClip().getItemAt(0).getText().toString().trim();
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-        return "";
-    }
-
     Handler hWnd = new Handler();
-    static String regex_url="(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
-
-    private static String findFirstUrl(String data) {
-        Pattern p = Pattern.compile(regex_url);
-        Matcher matcher = p.matcher(data);
-        while (matcher.find()) {
-            String findUrl = matcher.group();
-            if(findUrl.startsWith(baseUrl)){
-                return  findUrl;
-            }
-        }
-        return baseUrl;
-    }
 
     @Override
     protected void onDestroy() {
@@ -240,7 +164,7 @@ public class FullScreenActivity extends Activity {
             public void onClick(DialogInterface dialog, int which) {
                 finish();
             }
-        }).setNegativeButton("不是",null).setNeutralButton("重启", new DialogInterface.OnClickListener() {
+        }).setNegativeButton("不是",null).setNeutralButton("刷新页面", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mWebView.loadUrl(baseUrl);

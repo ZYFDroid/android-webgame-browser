@@ -38,6 +38,19 @@ public class Utils {
 		ald.show();
 	}
 
+	public static void JsAlert(Context ctx, String msg, final Runnable action){
+		AlertDialog ald =  new AlertDialog.Builder(ctx).setMessage(msg).setPositiveButton(yes, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i) {
+				action.run();
+			}
+		}).setCancelable(false).create();
+		if(!(ctx instanceof Activity))
+			ald.getWindow().setType(getFlagCompat());
+
+		ald.show();
+	}
+
 	public static void showDialog(Context ctx, String msg){
 		AlertDialog ald =  new AlertDialog.Builder(ctx).setMessage(msg).setPositiveButton(uhh,null).create();
 		if(!(ctx instanceof Activity))

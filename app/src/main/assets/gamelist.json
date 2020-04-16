@@ -1,0 +1,22 @@
+[
+  {
+    "guid":"gb_about",
+    "name":"使用说明(内置)",
+    "url":"file:////android_asset/help.html"
+  },
+  {
+    "guid":"majsoulcn",
+    "name":"雀魂麻将",
+    "url":"https://www.majsoul.com/1/"
+  },
+  {
+    "guid":"majsouljp",
+    "name":"雀魂(日服)",
+    "url":"https://game.mahjongsoul.com/"
+  },
+  {
+    "guid":"majsoulen",
+    "name":"雀魂(国际服)",
+    "url":"https://mahjongsoul.game.yo-star.com/"
+  }
+]

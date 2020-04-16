@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.majsoulwindows">
+    package="com.example.gamebrowser">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!--<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />-->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
@@ -19,7 +19,7 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LauncherActivity">
+        <activity android:name="com.example.gamebrowser.LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,20 +27,20 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".FrmBrowser" />
-        <service android:name=".WindowService" />
+        <service android:name="com.example.gamebrowser.FrmBrowser" />
+        <service android:name="com.example.gamebrowser.WindowService" />
 
-        <activity android:name=".SettingActivity" />
-        <activity android:name=".AboutActivity" />
+        <activity android:name="com.example.gamebrowser.SettingActivity" />
+        <activity android:name="com.example.gamebrowser.AboutActivity" />
         <activity
-            android:name=".FullScreenActivity"
+            android:name="com.example.gamebrowser.FullScreenActivity"
             android:configChanges="screenSize|keyboard|keyboardHidden|orientation|smallestScreenSize|screenLayout"
             android:resizeableActivity="true"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/InGameTheme"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".PluginActivity"
+            android:name="com.example.gamebrowser.PluginActivity"
             android:theme="@style/StandardTheme"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"

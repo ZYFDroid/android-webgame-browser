@@ -1,72 +1,32 @@
-package com.example.majsoulwindows;
+package com.example.gamebrowser;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.net.http.SslError;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.webkit.JavascriptInterface;
-import android.webkit.JsResult;
-import android.webkit.MimeTypeMap;
-import android.webkit.SafeBrowsingResponse;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.SequenceInputStream;
-import java.lang.reflect.ParameterizedType;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import wei.mark.standout.StandOutWindow;
 import wei.mark.standout.Utils;
@@ -84,12 +44,12 @@ public class FrmBrowser extends StandOutWindow {
 
     public HashMap<String,String> clipboardFinder = new HashMap<>();
 
-    public static String baseUrl = "https://www.majsoul.com/1/";
+    public static String baseUrl = SettingActivity.defaultPage;
     WebView mWebView;
 
     @Override
     public String getAppName() {
-        return Utils.getSP(this).getString("wndtext","雀魂麻将majsoul - Windows Ver~");
+        return Utils.getSP(this).getString("wndtext","使用说明")+" - 电竞浏览器";
     }
 
     @Override
@@ -141,7 +101,7 @@ public class FrmBrowser extends StandOutWindow {
     private int thisID = -1;
     @Override
     public void createAndAttachView(int id, FrameLayout frame) {
-        baseUrl = Utils.getSP(this).getString("url","https://www.majsoul.com/1/");
+        baseUrl = Utils.getSP(this).getString("url",SettingActivity.defaultPage);
         thisID = id;
         isRunning = true;
 
@@ -150,8 +110,8 @@ public class FrmBrowser extends StandOutWindow {
         mWebView.addJavascriptInterface(new SelectionCallback(),"CopyInterfaceCallback");
 
         frame.addView(mWebView);
-        renderW = Utils.getSP(this).getInt("rw",854);
-        renderH = Utils.getSP(this).getInt("rh",480);
+        renderW = Utils.getSP(this).getInt("rw",1280);
+        renderH = Utils.getSP(this).getInt("rh",720);
 
         WebGameBoostEngine.boost(this,mWebView,baseUrl);
 
@@ -164,67 +124,12 @@ public class FrmBrowser extends StandOutWindow {
         rootView = frame;
         scaleView();
 
-        if (Build.VERSION.SDK_INT <= 28) {
-            loadClipboardMap();
-            String clipboardData = paste(this);
-            for (String key : clipboardFinder.keySet()) {
-                if (clipboardData.contains(key)) {
-                    final String targetUrl = findFirstUrl(clipboardData);
-                    final String what = key;
-                    hWnd.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Utils.Prompt(FrmBrowser.this, "您复制了一个 " + clipboardFinder.get(what) + "，打开它吗？", new Utils.OnPromptResult() {
-                                @Override
-                                public void onResult(boolean isYesPressed) {
-                                    if (isYesPressed) {
-                                        mWebView.loadUrl(targetUrl);
-                                    } else {
-                                        mWebView.loadUrl(baseUrl);
-
-                                    }
-
-                                    Utils.Prompt(FrmBrowser.this, "是否删除剪切板中的链接？", new Utils.OnPromptResult() {
-                                        @Override
-                                        public void onResult(boolean isYesPressed) {
-                                            if (isYesPressed) {
-                                                clearClipboard();
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    }, 1000);
-                    return;
-                }
-            }
-        }
         mWebView.loadUrl(baseUrl);
     }
 
     int renderW=854,renderH=480;
 
-    public void loadClipboardMap(){
-        clipboardFinder.put(baseUrl+"?room=","好友房链接");
-        clipboardFinder.put(baseUrl.replace("https://","http://")+"?room=","好友房链接");
-        clipboardFinder.put(baseUrl+"?paipu=","牌谱链接");
-        clipboardFinder.put(baseUrl.replace("https://","http://")+"?paipu=","牌谱链接");
-    }
 
-
-
-    public void clearClipboard(){
-        ClipboardManager manager = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
-        if (manager != null) {
-            try {
-                manager.setPrimaryClip(manager.getPrimaryClip());
-                manager.setPrimaryClip(ClipData.newPlainText(null, ""));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
     public void setClipboard(String text){
         ClipboardManager manager = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
         if (manager != null) {
@@ -258,12 +163,13 @@ public class FrmBrowser extends StandOutWindow {
                 mWebView.setScaleX(ph/renderH);
                 mWebView.setScaleY(ph/renderH);
             }
-
+            mWebView.setRotation(0);
         }
         else{
-            lp.width=renderH;
-            lp.height = renderW;
-
+            lp.width=renderW;
+            lp.height = renderH;
+            float temp = pw;
+            pw=ph;ph=temp;
 
             if(ph / renderW * renderH < pw){
                 //屏幕更高的场合
@@ -275,6 +181,8 @@ public class FrmBrowser extends StandOutWindow {
                 mWebView.setScaleX(pw/renderH);
                 mWebView.setScaleY(pw/renderH);
             }
+
+            mWebView.setRotation(reserveGraphic ? -90 : 90);
         }
 
 
@@ -462,7 +370,7 @@ public class FrmBrowser extends StandOutWindow {
     @Override
     public List<DropDownListItem> getDropDownItems(int id) {
         List<DropDownListItem> list = new ArrayList<>();
-        list.add(new DropDownListItem(android.R.drawable.ic_menu_rotate,"重新加载",new Runnable(){
+        list.add(new DropDownListItem(android.R.drawable.ic_menu_rotate,"刷新",new Runnable(){
             @Override
             public void run() {
                 Utils.Confirm(getApplicationContext(), "是否重新载入？", new Runnable() {
@@ -500,16 +408,17 @@ public class FrmBrowser extends StandOutWindow {
             }
         }));
 
-
         list.add(new DropDownListItem(android.R.drawable.ic_menu_crop, "翻转画面", new Runnable() {
             @Override
             public void run() {
-                mWebView.setRotation(mWebView.getRotation() < 1 ? 180f : 0f);
+               reserveGraphic=!reserveGraphic;
+                hWnd.post(resizer);
             }
         }));
-
         return list;
     }
+
+    private boolean reserveGraphic = false;
 
     @SuppressWarnings("WrongConstant")
     @Override
@@ -536,7 +445,7 @@ public class FrmBrowser extends StandOutWindow {
 
     @Override
     public String getPersistentNotificationMessage(int id) {
-        return getResources().getString(R.string.app_name)+" 正在运行";
+        return getResources().getString(R.string.app_name)+" 正在使用窗口";
     }
 
     Runnable resizer = new Runnable() {
@@ -561,11 +470,11 @@ public class FrmBrowser extends StandOutWindow {
     @Override
     public Notification getPersistentNotification(int id) {
         if (Build.VERSION.SDK_INT >= 26) {
-            NotificationChannel channel = new NotificationChannel("Windows","前台服务驻留通知", NotificationManager.IMPORTANCE_LOW);
+            NotificationChannel channel = new NotificationChannel("Windows","窗口服务驻留通知", NotificationManager.IMPORTANCE_LOW);
             NotificationManager manager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
             manager.createNotificationChannel(channel);
         }
-        int icon = getAppIcon();
+        int icon = R.drawable.ic_notification_icon;
         long when = System.currentTimeMillis();
         Context c = getApplicationContext();
         String contentTitle = getPersistentNotificationTitle(id);
@@ -649,17 +558,4 @@ public class FrmBrowser extends StandOutWindow {
         return (int) (dpValue * scale + 0.5f);
     }
 
-    static String regex_url="(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
-
-    private static String findFirstUrl(String data) {
-        Pattern p = Pattern.compile(regex_url);
-        Matcher matcher = p.matcher(data);
-        while (matcher.find()) {
-            String findUrl = matcher.group();
-            if(findUrl.startsWith(baseUrl)){
-                return  findUrl;
-            }
-        }
-        return baseUrl;
-    }
 }

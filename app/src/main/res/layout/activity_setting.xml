@@ -5,13 +5,16 @@
     android:clickable="true"
     android:layout_height="match_parent">
     <FrameLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
         android:layout_height="wrap_content"
         android:background="@drawable/shadow">
 
         <LinearLayout
 
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_frame"
             android:clickable="true"
@@ -19,10 +22,11 @@
             android:padding="16px">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
+                android:gravity="center"
                 android:layout_height="wrap_content"
                 android:textColor="#000"
-                android:text="雀魂 窗口化 Majsoul Windows Ver 设置"/>
+                android:text="浏览器设置"/>
 
             <Button
                 android:layout_width="match_parent"
@@ -34,19 +38,15 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="插件管理"
-                android:onClick="loadPlugin"/>
+                android:text="选择游戏"
+                android:onClick="setServer"/>
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="变更分辨率(影响耗电)"
+                android:text="变更浏览器分辨率"
                 android:onClick="setResolution"/>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="变更服务器"
-                android:onClick="setServer"/>
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -57,21 +57,20 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
-                android:text="变更窗口标题"
-                android:onClick="setwindowtitle"/>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:text="变更窗口边框样式"
                 android:onClick="setWindowStyle"/>
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:text="应用信息"
                 android:onClick="appinfo"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="浏览器插件"
+                android:onClick="loadPlugin"/>
 
 
         </LinearLayout>

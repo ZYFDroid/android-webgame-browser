@@ -17,7 +17,6 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -39,7 +38,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.example.majsoulwindows.R;
+import com.example.gamebrowser.R;
 /**
  * Extend this class to easily create and manage floating StandOut windows.
  * 

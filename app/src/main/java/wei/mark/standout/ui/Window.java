@@ -1,25 +1,15 @@
 package wei.mark.standout.ui;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import com.example.majsoulwindows.FrmBrowser;
-import com.example.majsoulwindows.R;
+import com.example.gamebrowser.R;
 import wei.mark.standout.StandOutWindow;
 import wei.mark.standout.StandOutWindow.StandOutLayoutParams;
 import wei.mark.standout.Utils;
 import wei.mark.standout.constants.StandOutFlags;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -32,7 +22,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Special view that represents a floating window.

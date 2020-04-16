@@ -1,4 +1,4 @@
-package com.example.majsoulwindows;
+package com.example.gamebrowser;
 import android.app.*;
 import android.os.*;
 import android.content.*;
