@@ -41,7 +41,7 @@ public class FullScreenActivity extends Activity {
 
         if(null==mWebView) {
             this.mWebView = new WebView(this);
-            WebGameBoostEngine.boost(this,mWebView,baseUrl);
+            WebGameBoostEngine.boost(this,mWebView,baseUrl,null);
         }
         frame.addView(mWebView);
         renderW = Utils.getSP(this).getInt("rw",854);

@@ -26,8 +26,8 @@
             android:id="@+id/window_icon"
             android:layout_width="26dp"
             android:src="@drawable/ic"
-            android:padding="5dp"
-            android:paddingLeft="4dp"
+            android:padding="3dp"
+            android:paddingLeft="3dp"
             android:layout_height="26dp"
             android:contentDescription="@string/window_icon" />
 
@@ -35,12 +35,12 @@
             android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
+            android:layout_marginLeft="2dp"
             android:layout_weight="1"
             android:maxLines="1"
             android:textColor="#000"
             android:text="Title"
-            android:textSize="13sp"
+            android:textSize="11sp"
             tools:ignore="HardcodedText" />
 
         <ImageView
@@ -98,8 +98,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:translationX="5dp"
-        android:translationY="5dp"
+        android:translationX="2dp"
+        android:translationY="2dp"
         android:contentDescription="@string/corner"
         android:src="@drawable/corner" />
 

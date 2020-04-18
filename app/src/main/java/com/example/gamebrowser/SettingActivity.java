@@ -210,18 +210,6 @@ public class SettingActivity extends Activity {
         }
     }
 
-    public static String[] windowStyle={"默认","Win7","WindowsXP"};
-
-    public void setWindowStyle(View view) {
-        new AlertDialog.Builder(this).setTitle("选择窗口边框样式").setItems(windowStyle, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Utils.getSP(SettingActivity.this).edit().putString("borderstyle",windowStyle[i]).commit();
-                Toast.makeText(SettingActivity.this, "已设置边框样式："+windowStyle[i], Toast.LENGTH_SHORT).show();
-            }
-        }).create().show();
-    }
-
     public void loadPlugin(View view) {
 //        if(!hasStorage()){
 //            Toast.makeText(this, "存储权限没有获取", Toast.LENGTH_SHORT).show();

@@ -47,7 +47,7 @@ import wei.mark.standout.Utils;
 public class WebGameBoostEngine {
 
 
-    public static void boost(final Context ctx,final WebView mWebView, final String baseUrl){
+    public static void boost(final Context ctx,final WebView mWebView, final String baseUrl, final OnTitleChangedListener titleListener){
         final String cachepref  = Utils.getSP(ctx).getString("tmp","def");
         String urlRoot = baseUrl;
         if(baseUrl.lastIndexOf(".",baseUrl.length())>0){
@@ -64,6 +64,8 @@ public class WebGameBoostEngine {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 return !url.startsWith(baseUrl);
             }
+
+
 
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
@@ -250,6 +252,8 @@ public class WebGameBoostEngine {
                 }
                 return path +cachepref+ "/mods/";
             }
+
+
         });
         mWebView.setWebChromeClient(new WebChromeClient() {
             @Override
@@ -267,6 +271,33 @@ public class WebGameBoostEngine {
                 });
                 return true;
             }
+
+            @Override
+            public void onReceivedTitle(WebView view,final String title) {
+                super.onReceivedTitle(view, title);
+                hWnd.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(null!=titleListener){
+                            titleListener.onTitleChanged(title);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onReceivedIcon(WebView view,final Bitmap icon) {
+                super.onReceivedIcon(view, icon);
+                hWnd.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(null!=titleListener){
+                            titleListener.onIconChanged(icon);
+                        }
+                    }
+                });
+            }
+
         });
         WebSettings settings = mWebView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -283,7 +314,14 @@ public class WebGameBoostEngine {
 
     }
     private static android.os.Handler hWnd;
+
+    public static interface OnTitleChangedListener{
+        void onTitleChanged(String title);
+        void onIconChanged(Bitmap icon);
+    }
+
 }
+
 
 
 class AsyncWebDownloader extends Thread{

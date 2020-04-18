@@ -352,12 +352,7 @@ public class Window extends FrameLayout {
 	public View btnCam;
 
 	private int getDecorationStyle(){
-		if(Utils.isSet(flags,StandOutFlags.FLAG_DECORATION_STYLE_WIN7)){
-			return R.layout.system_window_decorators_win7;
-		}
-		if(Utils.isSet(flags,StandOutFlags.FLAG_DECORATION_STYLE_WINXP)){
-			return R.layout.system_window_decorators_xp;
-		}
+
 		return R.layout.system_window_decorators;
 	}
 

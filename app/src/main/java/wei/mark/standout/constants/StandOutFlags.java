@@ -217,6 +217,4 @@ public class StandOutFlags {
 	public static final int FLAG_ADD_FUNCTIONALITY_DROP_DOWN_DISABLE = 1 << flag_bit++;
 
 
-	public static final int FLAG_DECORATION_STYLE_WIN7 = 1 << flag_bit++;
-	public static final int FLAG_DECORATION_STYLE_WINXP = 1 << flag_bit++;
 }

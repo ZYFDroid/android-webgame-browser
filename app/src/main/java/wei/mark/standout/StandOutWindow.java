@@ -13,6 +13,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -1606,6 +1607,16 @@ public abstract class StandOutWindow extends Service {
 			View icon = window.findViewById(R.id.window_icon);
 			if (icon instanceof ImageView) {
 				((ImageView) icon).setImageResource(drawableRes);
+			}
+		}
+	}
+
+	public final void setIcon(int id, Bitmap ic) {
+		Window window = getWindow(id);
+		if (window != null) {
+			View icon = window.findViewById(R.id.window_icon);
+			if (icon instanceof ImageView) {
+				((ImageView) icon).setImageBitmap(ic);
 			}
 		}
 	}

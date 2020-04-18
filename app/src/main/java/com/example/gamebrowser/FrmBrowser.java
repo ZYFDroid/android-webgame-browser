@@ -8,6 +8,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
@@ -49,7 +50,7 @@ public class FrmBrowser extends StandOutWindow {
 
     @Override
     public String getAppName() {
-        return Utils.getSP(this).getString("wndtext","使用说明")+" - 电竞浏览器";
+        return Utils.getSP(this).getString("windowtext","使用说明")+" - 电竞浏览器";
     }
 
     @Override
@@ -113,7 +114,19 @@ public class FrmBrowser extends StandOutWindow {
         renderW = Utils.getSP(this).getInt("rw",1280);
         renderH = Utils.getSP(this).getInt("rh",720);
 
-        WebGameBoostEngine.boost(this,mWebView,baseUrl);
+        WebGameBoostEngine.boost(this, mWebView, baseUrl, new WebGameBoostEngine.OnTitleChangedListener() {
+            @Override
+            public void onTitleChanged(String title) {
+                setTitle(thisID,title+" - 电竞浏览器");
+            }
+
+            @Override
+            public void onIconChanged(Bitmap icon) {
+                setIcon(thisID,icon);
+            }
+        });
+
+
 
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mWebView.getLayoutParams();
         frame.setClickable(true);
@@ -125,6 +138,8 @@ public class FrmBrowser extends StandOutWindow {
         scaleView();
 
         mWebView.loadUrl(baseUrl);
+
+
     }
 
     int renderW=854,renderH=480;
@@ -168,18 +183,19 @@ public class FrmBrowser extends StandOutWindow {
         else{
             lp.width=renderW;
             lp.height = renderH;
+
             float temp = pw;
             pw=ph;ph=temp;
 
-            if(ph / renderW * renderH < pw){
+            if(pw / renderW * renderH < ph){
                 //屏幕更高的场合
-                mWebView.setScaleX(ph/renderW);
-                mWebView.setScaleY(ph/renderW);
+                mWebView.setScaleX(pw/renderW);
+                mWebView.setScaleY(pw/renderW);
             }
             else{
                 //屏幕更窄的场合
-                mWebView.setScaleX(pw/renderH);
-                mWebView.setScaleY(pw/renderH);
+                mWebView.setScaleX(ph/renderH);
+                mWebView.setScaleY(ph/renderH);
             }
 
             mWebView.setRotation(reserveGraphic ? -90 : 90);
@@ -434,12 +450,7 @@ public class FrmBrowser extends StandOutWindow {
                 |StandOutFlags.FLAG_WINDOW_HIDE_ENABLE
                 |StandOutFlags.FLAG_BODY_MOVE_ENABLE
                 |StandOutFlags.FLAG_DECORATION_SYSTEM;
-        if(Utils.getSP(this).getString("borderstyle","默认").equals("Win7")){
-            flat |= StandOutFlags.FLAG_DECORATION_STYLE_WIN7;
-        }
-        if(Utils.getSP(this).getString("borderstyle","默认").equals("WindowsXP")){
-            flat |= StandOutFlags.FLAG_DECORATION_STYLE_WINXP;
-        }
+
         return flat;
     }
 
