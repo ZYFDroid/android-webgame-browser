@@ -161,6 +161,12 @@ public class WebGameBoostEngine {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
+
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
                 File patchList = new File(getModDir());
                 if(!patchList.exists()){
                     patchList.mkdirs();

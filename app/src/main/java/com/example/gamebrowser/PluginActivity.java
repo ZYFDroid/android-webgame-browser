@@ -16,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -37,7 +39,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -61,12 +65,12 @@ public class PluginActivity extends Activity {
                 apps.clear();
                 for (ResolveInfo info : mApps) {
                     try {
-                        PackageInfo pifo = getPackageManager().getPackageInfo(info.activityInfo.packageName,0);
-                        String path = pifo.applicationInfo.sourceDir;
-                        String version = pifo.versionName;
+                        PackageInfo pkg = getPackageManager().getPackageInfo(info.activityInfo.packageName,0);
+                        String path = pkg.applicationInfo.sourceDir;
+                        String version = pkg.versionName;
                         String desc = info.activityInfo.metaData.getString("gb-addons-desc","无描述");
                         String author = info.activityInfo.metaData.getString("gb-addons-author","未知");
-                        apps.add(new AppInfo(info.activityInfo.loadIcon(getPackageManager()),info.activityInfo.loadLabel(getPackageManager()).toString(),path,desc,version,author));
+                        apps.add(new AppInfo(info.activityInfo.loadIcon(getPackageManager()),info.activityInfo.loadLabel(getPackageManager()).toString(),path,desc,version,author,pkg.packageName));
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -92,6 +96,8 @@ public class PluginActivity extends Activity {
 
     List<AppInfo> apps = new ArrayList<>();
 
+
+
     class AppListViewHolder
     {
         ImageView viewImg;
@@ -99,28 +105,40 @@ public class PluginActivity extends Activity {
         TextView viewDesc;
         TextView viewVer;
         TextView viewAuthor;
+        CheckBox chkEnabled;
     }
     class AppInfo{
         Drawable bmp;String name;
         String apppath;
         String desc,version;
         String author;
-        public AppInfo(Drawable bmp, String name,String apppath,String desc,String version,String author) {
+        String pkgName;
+        public AppInfo(Drawable bmp, String name,String apppath,String desc,String version,String author,String pkgName) {
             this.bmp = bmp;
             this.name = name;
             this.apppath = apppath;
             this.desc = desc;
             this.version = version;
             this.author = author;
+            this.pkgName=pkgName;
         }
     }
-
+    Set<String> enabledPlugin = new LinkedHashSet<>();
     void initList(){
+        enabledPlugin.clear();
+        Set<String> temp = Utils.getSP(this).getStringSet("enabled_plugin",null);
+        if(null!=temp) {
+            enabledPlugin.addAll(temp);
+        }
         findViewById(R.id.proLoading).setVisibility(GONE);
         findViewById(R.id.listPlugin).setVisibility(View.VISIBLE);
         ((ListView)findViewById(R.id.listPlugin)).setAdapter(new AppAdapter());
     }
 
+    void saveList(){
+        Utils.getSP(this).edit().putStringSet("enabled_plugin",enabledPlugin).apply();
+        unsave=true;
+    }
 
     class AppAdapter extends BaseAdapter {
         public AppAdapter() {
@@ -135,11 +153,12 @@ public class PluginActivity extends Activity {
                 LayoutInflater inflater = getLayoutInflater();
                 layout = (LinearLayout) inflater.inflate(R.layout.adapter_app, null);
 
-                holder.viewImg = (ImageView) layout.findViewById(R.id.viewImg);
-                holder.viewName = (TextView) layout.findViewById(R.id.viewName);
-                holder.viewDesc = (TextView) layout.findViewById(R.id.viewDesc);
-                holder.viewVer = (TextView) layout.findViewById(R.id.viewVer);
-                holder.viewAuthor = (TextView) layout.findViewById(R.id.viewAuthor);
+                holder.viewImg =  layout.findViewById(R.id.viewImg);
+                holder.viewName =  layout.findViewById(R.id.viewName);
+                holder.viewDesc =  layout.findViewById(R.id.viewDesc);
+                holder.viewVer =  layout.findViewById(R.id.viewVer);
+                holder.viewAuthor =  layout.findViewById(R.id.viewAuthor);
+                holder.chkEnabled=layout.findViewById(R.id.chkEnabled);
                 layout.setTag(holder);
             }
             else
@@ -154,7 +173,33 @@ public class PluginActivity extends Activity {
             holder.viewVer.setText(info.version);
             holder.viewDesc.setText(info.desc);
             holder.viewAuthor.setText("作者："+info.author);
+            holder.chkEnabled.setOnCheckedChangeListener(null);
+            holder.chkEnabled.setChecked(enabledPlugin.contains(info.pkgName));
+            holder.chkEnabled.setOnCheckedChangeListener(new PluginEnabler(info.pkgName));
             return layout;
+        }
+
+        class PluginEnabler implements CompoundButton.OnCheckedChangeListener{
+            String pkgName;
+
+            public PluginEnabler(String pkgName) {
+                this.pkgName = pkgName;
+            }
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    if(!enabledPlugin.contains(pkgName)){
+                        enabledPlugin.add(pkgName);
+                    }
+                }
+                else{
+                    if(enabledPlugin.contains(pkgName)){
+                        enabledPlugin.remove(pkgName);
+                    }
+                }
+                saveList();
+            }
         }
 
         @Override
@@ -197,7 +242,10 @@ public class PluginActivity extends Activity {
         ald.show();
     }
 
-    @SuppressWarnings("all")//？？？
+    // Indicates changes of plugin list.
+    boolean unsave=false;
+
+    @SuppressWarnings("all")
     public void loadPlugin(View view) {
         new AsyncTask<List<AppInfo>,String,String>(){
             ProgressDialog pdd;
@@ -214,6 +262,7 @@ public class PluginActivity extends Activity {
             protected void onPostExecute(String s) {
                 pdd.dismiss();
                 Utils.showDialog(PluginActivity.this,s);
+                unsave=false;
                 super.onPostExecute(s);
             }
 
@@ -234,6 +283,7 @@ public class PluginActivity extends Activity {
                     }
                 }
                 for (AppInfo info: params[0]) {
+                    if(!enabledPlugin.contains(info.pkgName)){continue;}
                     publishProgress("正在加载 "+info.name);
                     try{
                         ZipFile zipf = new ZipFile(info.apppath);
@@ -276,6 +326,15 @@ public class PluginActivity extends Activity {
         }.execute(apps);
     }
 
+    @Override
+    public void onBackPressed() {
+        if(unsave && findViewById(R.id.btnPlugin).isEnabled()){
+            loadPlugin(null);
+            return;
+        }
+        super.onBackPressed();
+    }
+
     void copyStream(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024];
         int len=0;
@@ -283,6 +342,8 @@ public class PluginActivity extends Activity {
             out.write(buffer,0,len);
         }
     }
+
+
 
     String getPatchDir(String cachepref) {
         String path = getFilesDir().getAbsolutePath();
@@ -318,6 +379,8 @@ public class PluginActivity extends Activity {
             }
         }
     }
+
+
 
     public static void deleteDir(String dirPath)
     {
